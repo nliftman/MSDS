@@ -1752,33 +1752,129 @@ display: none;
 
 
 <!-- rnb-text-begin -->
+<div id="question-5-hw-1---a-copy-machine-is-used-to-make-n-pages-of-copies-per-day.-the-machine-has-two-trays-in-which-paper-gets-loaded-and-each-page-is-taken-randomly-and-independently-from-one-of-the-other-trays.-at-the-beginning-of-the-day-the-trays-are-refilled-so-that-they-each-have-m-pages.-using-simulations-in-r-find-the-smallest-value-of-m-for-which-there-is-at-least-a-95-chance-that-both-trays-have-enough-paper-on-a-particular-dayfor-n-10-n-100-n-1000-and-n-10000." class="section level1">
+<h1>Question 5 HW 1 - A copy machine is used to make n pages of copies
+per day. The machine has two trays in which paper gets loaded, and each
+page is taken randomly and independently from one of the other trays. At
+the beginning of the day, the trays are refilled so that they each have
+m pages. Using simulations in R, find the smallest value of m for which
+there is at least a 95% chance that both trays have enough paper on a
+particular day,for n = 10, n = 100, n = 1000, and n = 10000.</h1>
+<p>I will start by creating a function to measure the probability of
+success:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcblxuYGBgIn0= -->
-<pre class="r"><code>library(dplyr)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3NldHRpbmcgYSBzZWVkIHNvIGl0cyByZXByb2R1Y2FibGVcbnNlZWQoMTAyODQpXG5cbiNmdW5jdGlvbiBmb3Igc3VjY2Vzc1xuc3VjY2VzcyA8LSBmdW5jdGlvbihuLCBtKXtcbiAgI2xhYmVsaW5nIHRoZSBudW1iZXIgb2Ygc2ltdWxhdGlvbnNcbiAgbnNpbXM9MTAwMDAwXG4gICNjcmVhdGUgYSByZWNvcmQgb2YgdGhlIHNpbXVsYXRpb25zXG4gIHJlY29yZHMgPSByZXAoMCxuc2ltcylcbiAgZm9yKGkgaW4gMTpuc2ltcyl7XG4gICAgI3VzaW5nIHNhbXBsZSB0YWtlcyBhIHNhbXBsZSBvZiBzaXplIG4gZnJvbSBlaXRoZXIgMCBvciAxIFxuICAgIGxlZnQgPC0gc3VtKHNhbXBsZShjKDAsMSksIHNpemUgPSBuLCByZXBsYWNlID0gVFJVRSkpXG4gICAgI3JpZ2h0IHNpZGUgaXMgdGhlIG9uZXMgcHVsbGVkIHdoZW4gbGVmdCBpcyBub3QgcHVsbGVkXG4gICAgcmlnaHQgPC0gbi1sZWZ0XG4gICAgI3Rha2Ugb25seSB3aGVuIGxlZnQgYW5kIHJpZ2h0IGFyZSBhYm92ZSBtXG4gICAgcmVjb3Jkc1tpXSA8LSAobGVmdCA8PSBtICYgcmlnaHQgPD0gbSlcbiAgfVxuICAjdGFrZSBhbiBhdmVyYWdlIG9mIHRoZSByZWNvcmRzXG4gIG1lYW4ocmVjb3Jkcylcbn1cbmBgYCJ9 -->
+<pre class="r"><code>#setting a seed so its reproducable
+seed(10284)
+
+#function for success
+success &lt;- function(n, m){
+  #labeling the number of simulations
+  nsims=100000
+  #create a record of the simulations
+  records = rep(0,nsims)
+  for(i in 1:nsims){
+    #using sample takes a sample of size n from either 0 or 1 
+    left &lt;- sum(sample(c(0,1), size = n, replace = TRUE))
+    #right side is the ones pulled when left is not pulled
+    right &lt;- n-left
+    #take only when left and right are above m
+    records[i] &lt;- (left &lt;= m &amp; right &lt;= m)
+  }
+  #take an average of the records
+  mean(records)
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now I will look at n = 10 and play around with the m until I get a
+probability over .95. We find that for n = 10 the smallest m with
+probability of at least .95 is m = 8.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3RyeWluZyB3aXRoIG0gPTEgYW5kIFxuc3VjY2VzcygxMCwgMSlcbmBgYCJ9 -->
+<pre class="r"><code>#trying with m =1 and 
+success(10, 1)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDBcbiJ9 -->
+<pre><code>[1] 0</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3JldHVybnMgMFxuXG4jdHJ5aW5nIGEgaGlnaGVyIG0gPTVcbnN1Y2Nlc3MoMTAsNSlcbmBgYCJ9 -->
+<pre class="r"><code>#returns 0
+
+#trying a higher m =5
+success(10,5)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMjQ3NjFcbiJ9 -->
+<pre><code>[1] 0.24761</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3JldHVybnMgLjI0XG5cbiN0cnlpbmcgbT03XG5zdWNjZXNzKDEwLDcpXG5gYGAifQ== -->
+<pre class="r"><code>#returns .24
+
+#trying m=7
+success(10,7)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuODkwNTFcbiJ9 -->
+<pre><code>[1] 0.89051</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3JldHVybnMgLjg5XG5cbiN0cnlpbmcgbSA9IDhcbnN1Y2Nlc3MoMTAsOClcbmBgYCJ9 -->
+<pre class="r"><code>#returns .89
+
+#trying m = 8
+success(10,8)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuOTc4M1xuIn0= -->
+<pre><code>[1] 0.9783</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3JldHVybnMgLjk3XG5gYGAifQ== -->
+<pre class="r"><code>#returns .97</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We continue with n = 100 and find that m = 60 is the smallest m to
+satisfy our requirements.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3RyeWluZyBtID0gNTlcbnN1Y2Nlc3MoMTAwLCA1OSlcblxuYGBgIn0= -->
+<pre class="r"><code>#trying m = 59
+success(100, 59)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYZHBseXLigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmRicGx5cuKAmTpcblxuICAgIGlkZW50LCBzcWxcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnN0YXRz4oCZOlxuXG4gICAgZmlsdGVyLCBsYWdcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmJhc2XigJk6XG5cbiAgICBpbnRlcnNlY3QsIHNldGRpZmYsIHNldGVxdWFsLCB1bmlvblxuIn0= -->
-<pre><code>
-Attaching package: ‘dplyr’
-
-The following objects are masked from ‘package:dbplyr’:
-
-    ident, sql
-
-The following objects are masked from ‘package:stats’:
-
-    filter, lag
-
-The following objects are masked from ‘package:base’:
-
-    intersect, setdiff, setequal, union</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuOTQzNTlcbiJ9 -->
+<pre><code>[1] 0.94359</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>Looking at n = 1000 we find that m = 531 is the smallest m with a
+probability of 95% or over.</p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3RyeWluZyBtID0gNTMxXG5zdWNjZXNzKDEwMDAsIDUzMSlcblxuYGBgIn0= -->
+<pre class="r"><code>#trying m = 531
+success(1000, 531)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuOTUyOTdcbiJ9 -->
+<pre><code>[1] 0.95297</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Doing this with n = 10,000 and finding that m = 5098.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3RyeWluZyBtID0gNTA5N1xuc3VjY2VzcygxMDAwMCwgNTA5NylcblxuYGBgIn0= -->
+<pre class="r"><code>#trying m = 5097
+success(10000, 5097)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuOTQ5MDRcbiJ9 -->
+<pre><code>[1] 0.94904</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiREFUQSA1NTYiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCmBgYHtyfQpsaWJyYXJ5KGRwbHlyKQoKYGBgCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiREFUQSA1NTYiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCiMgUXVlc3Rpb24gNSBIVyAxIC0gQSBjb3B5IG1hY2hpbmUgaXMgdXNlZCB0byBtYWtlIG4gcGFnZXMgb2YgY29waWVzIHBlciBkYXkuIFRoZSBtYWNoaW5lIGhhcyB0d28gdHJheXMgaW4gd2hpY2ggcGFwZXIgZ2V0cyBsb2FkZWQsIGFuZCBlYWNoIHBhZ2UgaXMgdGFrZW4gcmFuZG9tbHkgYW5kIGluZGVwZW5kZW50bHkgZnJvbSBvbmUgb2YgdGhlIG90aGVyIHRyYXlzLiBBdCB0aGUgYmVnaW5uaW5nIG9mIHRoZSBkYXksIHRoZSB0cmF5cyBhcmUgcmVmaWxsZWQgc28gdGhhdCB0aGV5IGVhY2ggaGF2ZSBtIHBhZ2VzLiBVc2luZyBzaW11bGF0aW9ucyBpbiBSLCBmaW5kIHRoZSBzbWFsbGVzdCB2YWx1ZSBvZiBtIGZvciB3aGljaCB0aGVyZSBpcyBhdCBsZWFzdCBhIDk1JSBjaGFuY2UgdGhhdCBib3RoIHRyYXlzIGhhdmUgZW5vdWdoIHBhcGVyIG9uIGEgcGFydGljdWxhciBkYXksZm9yIG4gPSAxMCwgbiA9IDEwMCwgbiA9IDEwMDAsIGFuZCBuID0gMTAwMDAuCgpJIHdpbGwgc3RhcnQgYnkgY3JlYXRpbmcgYSBmdW5jdGlvbiB0byBtZWFzdXJlIHRoZSBwcm9iYWJpbGl0eSBvZiBzdWNjZXNzOgpgYGB7cn0KI3NldHRpbmcgYSBzZWVkIHNvIGl0cyByZXByb2R1Y2FibGUKc2VlZCgxMDI4NCkKCiNmdW5jdGlvbiBmb3Igc3VjY2VzcwpzdWNjZXNzIDwtIGZ1bmN0aW9uKG4sIG0pewogICNsYWJlbGluZyB0aGUgbnVtYmVyIG9mIHNpbXVsYXRpb25zCiAgbnNpbXM9MTAwMDAwCiAgI2NyZWF0ZSBhIHJlY29yZCBvZiB0aGUgc2ltdWxhdGlvbnMKICByZWNvcmRzID0gcmVwKDAsbnNpbXMpCiAgZm9yKGkgaW4gMTpuc2ltcyl7CiAgICAjdXNpbmcgc2FtcGxlIHRha2VzIGEgc2FtcGxlIG9mIHNpemUgbiBmcm9tIGVpdGhlciAwIG9yIDEgCiAgICBsZWZ0IDwtIHN1bShzYW1wbGUoYygwLDEpLCBzaXplID0gbiwgcmVwbGFjZSA9IFRSVUUpKQogICAgI3JpZ2h0IHNpZGUgaXMgdGhlIG9uZXMgcHVsbGVkIHdoZW4gbGVmdCBpcyBub3QgcHVsbGVkCiAgICByaWdodCA8LSBuLWxlZnQKICAgICN0YWtlIG9ubHkgd2hlbiBsZWZ0IGFuZCByaWdodCBhcmUgYWJvdmUgbQogICAgcmVjb3Jkc1tpXSA8LSAobGVmdCA8PSBtICYgcmlnaHQgPD0gbSkKICB9CiAgI3Rha2UgYW4gYXZlcmFnZSBvZiB0aGUgcmVjb3JkcwogIG1lYW4ocmVjb3JkcykKfQpgYGAKCk5vdyBJIHdpbGwgbG9vayBhdCBuID0gMTAgYW5kIHBsYXkgYXJvdW5kIHdpdGggdGhlIG0gdW50aWwgSSBnZXQgYSBwcm9iYWJpbGl0eSBvdmVyIC45NS4gV2UgZmluZCB0aGF0IGZvciBuID0gMTAgdGhlIHNtYWxsZXN0IG0gd2l0aCBwcm9iYWJpbGl0eSBvZiBhdCBsZWFzdCAuOTUgaXMgbSA9IDguIApgYGB7cn0KI3RyeWluZyB3aXRoIG0gPTEgYW5kIApzdWNjZXNzKDEwLCAxKQojcmV0dXJucyAwCgojdHJ5aW5nIGEgaGlnaGVyIG0gPTUKc3VjY2VzcygxMCw1KQojcmV0dXJucyAuMjQKCiN0cnlpbmcgbT03CnN1Y2Nlc3MoMTAsNykKI3JldHVybnMgLjg5CgojdHJ5aW5nIG0gPSA4CnN1Y2Nlc3MoMTAsOCkKI3JldHVybnMgLjk3OApgYGAKV2UgY29udGludWUgd2l0aCBuID0gMTAwIGFuZCBmaW5kIHRoYXQgbSA9IDYwIGlzIHRoZSBzbWFsbGVzdCBtIHRvIHNhdGlzZnkgb3VyIHJlcXVpcmVtZW50cy4gCmBgYHtyfQojdHJ5aW5nIHdpdGggbSA9IDUwIGFuZCAKc3VjY2VzcygxMDAsIDUwKQojcmV0dXJucyAwLjA4CgojdHJ5aW5nIGEgaGlnaGVyIG0gPSA3NQpzdWNjZXNzKDEwMCw3NSkKI3JldHVybnMgMQoKI3RyeWluZyBtPSA2MApzdWNjZXNzKDEwMCw2MCkKI3JldHVybnMgLjk2CgojdHJ5aW5nIG0gPSA1OQpzdWNjZXNzKDEwMCwgNTkpCiNyZXR1cm5zIC45NApgYGAKCkxvb2tpbmcgYXQgbiA9IDEwMDAgd2UgZmluZCB0aGF0IG0gPSA1MzEgaXMgdGhlIHNtYWxsZXN0IG0gd2l0aCBhIHByb2JhYmlsaXR5IG9mIDk1JSBvciBvdmVyLiAKYGBge3J9CiN0cnlpbmcgd2l0aCBtID0gNTAwIGFuZCAKc3VjY2VzcygxMDAwLCA1MDApCiNyZXR1cm5zIDAuMDI1CgojdHJ5aW5nIGEgaGlnaGVyIG0gPSA3NTAKc3VjY2VzcygxMDAwLDc1MCkKI3JldHVybnMgMQoKI3RyeWluZyBtPSA2MDAKc3VjY2VzcygxMDAwLDYwMCkKI3JldHVybnMgMQoKI3RyeWluZyBtID0gNTUwCnN1Y2Nlc3MoMTAwMCwgNTUwKQojcmV0dXJucyAuOTkKCiN0cnlpbmcgbSA9IDUyMApzdWNjZXNzKDEwMDAsIDUyMCkKI3JldHVybnMgLjgKCiN0cnlpbmcgbSA9IDUzMApzdWNjZXNzKDEwMDAsIDUzMCkKI3JldHVybnMgLjk0NQoKI3RyeWluZyBtID0gNTMxCnN1Y2Nlc3MoMTAwMCwgNTMxKQojcmV0dXJucyAuOTUKYGBgCgpEb2luZyB0aGlzIHdpdGggbiA9IDEwLDAwMCBhbmQgZmluZGluZyB0aGF0IG0gPSA1MDk4LiAKYGBge3J9CiN0cnlpbmcgd2l0aCBtID0gNTAwMCBhbmQgCnN1Y2Nlc3MoMTAwMDAsIDUwMDApCiNyZXR1cm5zIDAuMDA3CgojdHJ5aW5nIGEgaGlnaGVyIG0gPSA2MDAwCnN1Y2Nlc3MoMTAwMDAsNjAwMCkKI3JldHVybnMgMQoKI3RyeWluZyBtPSA1NTAwCnN1Y2Nlc3MoMTAwMDAsNTUwMCkKI3JldHVybnMgMQoKI3RyeWluZyBtID0gNTUwCnN1Y2Nlc3MoMTAwMDAsIDUyMDApCiNyZXR1cm5zIC45OQoKI3RyeWluZyBtID0gNTEwMApzdWNjZXNzKDEwMDAwLCA1MTAwKQojcmV0dXJucyAuOTU1CgojdHJ5aW5nIG0gPSA1MDk5CnN1Y2Nlc3MoMTAwMDAsIDUwOTkpCiNyZXR1cm5zIC45NTMKCiN0cnlpbmcgbSA9IDUwOTgKc3VjY2VzcygxMDAwMCwgNTA5OCkKI3JldHVybnMgLjk1MQoKI3RyeWluZyBtID0gNTA5NwpzdWNjZXNzKDEwMDAwLCA1MDk3KQojcmV0dXJucyAuOTQ5CgpgYGAK</div>
 
 
 

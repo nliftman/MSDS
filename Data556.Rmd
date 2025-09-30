@@ -3,8 +3,132 @@ title: "DATA 556"
 output: html_notebook
 ---
 
-```{r}
-library(dplyr)
+# Question 5 HW 1 - A copy machine is used to make n pages of copies per day. The machine has two trays in which paper gets loaded, and each page is taken randomly and independently from one of the other trays. At the beginning of the day, the trays are refilled so that they each have m pages. Using simulations in R, find the smallest value of m for which there is at least a 95% chance that both trays have enough paper on a particular day,for n = 10, n = 100, n = 1000, and n = 10000.
 
+I will start by creating a function to measure the probability of success:
+```{r}
+#setting a seed so its reproducable
+seed(10284)
+
+#function for success
+success <- function(n, m){
+  #labeling the number of simulations
+  nsims=100000
+  #create a record of the simulations
+  records = rep(0,nsims)
+  for(i in 1:nsims){
+    #using sample takes a sample of size n from either 0 or 1 
+    left <- sum(sample(c(0,1), size = n, replace = TRUE))
+    #right side is the ones pulled when left is not pulled
+    right <- n-left
+    #take only when left and right are above m
+    records[i] <- (left <= m & right <= m)
+  }
+  #take an average of the records
+  mean(records)
+}
 ```
 
+Now I will look at n = 10 and play around with the m until I get a probability over .95. We find that for n = 10 the smallest m with probability of at least .95 is m = 8. 
+```{r}
+#trying with m =1 and 
+success(10, 1)
+#returns 0
+
+#trying a higher m =5
+success(10,5)
+#returns .24
+
+#trying m=7
+success(10,7)
+#returns .89
+
+#trying m = 8
+success(10,8)
+#returns .978
+```
+We continue with n = 100 and find that m = 60 is the smallest m to satisfy our requirements. 
+```{r}
+#trying with m = 50 and 
+success(100, 50)
+#returns 0.08
+
+#trying a higher m = 75
+success(100,75)
+#returns 1
+
+#trying m= 60
+success(100,60)
+#returns .96
+
+#trying m = 59
+success(100, 59)
+#returns .94
+```
+
+Looking at n = 1000 we find that m = 531 is the smallest m with a probability of 95% or over. 
+```{r}
+#trying with m = 500 and 
+success(1000, 500)
+#returns 0.025
+
+#trying a higher m = 750
+success(1000,750)
+#returns 1
+
+#trying m= 600
+success(1000,600)
+#returns 1
+
+#trying m = 550
+success(1000, 550)
+#returns .99
+
+#trying m = 520
+success(1000, 520)
+#returns .8
+
+#trying m = 530
+success(1000, 530)
+#returns .945
+
+#trying m = 531
+success(1000, 531)
+#returns .95
+```
+
+Doing this with n = 10,000 and finding that m = 5098. 
+```{r}
+#trying with m = 5000 and 
+success(10000, 5000)
+#returns 0.007
+
+#trying a higher m = 6000
+success(10000,6000)
+#returns 1
+
+#trying m= 5500
+success(10000,5500)
+#returns 1
+
+#trying m = 550
+success(10000, 5200)
+#returns .99
+
+#trying m = 5100
+success(10000, 5100)
+#returns .955
+
+#trying m = 5099
+success(10000, 5099)
+#returns .953
+
+#trying m = 5098
+success(10000, 5098)
+#returns .951
+
+#trying m = 5097
+success(10000, 5097)
+#returns .949
+
+```

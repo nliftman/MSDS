@@ -1,0 +1,28 @@
+---
+title: "Data 556 HW 2"
+author: "Naomi Liftman"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r}
+#loading the package that includes rv distributions
+library(stats)
+```
+
+```{r}
+#setting a seed so its reproducable
+set.seed(99)
+
+nsims=10000
+records = rep(0,nsims)
+
+for(i in 1:nsims){
+  radius <- runif(1, min = 0, max = 1)
+  records[i] <- ((radius^2)*pi)
+}
+
+#expectation of the area (the area is the records)
+e_a = sum(records)/nsims #1.048
+var_a = 
+```

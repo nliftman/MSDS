@@ -52,6 +52,39 @@ e_r_one = sum(one_r)/10000 #8.438
 
 ```
 
+# 4a. Let $U_1$, .... $U_n$ be iid Unif(0,1) and x=max(iids). Use R to numerically estimate E(x). 
+```{r}
+set.seed(100)
+
+nsims = 10000
+xrecords = rep(0,nsims)
+
+for(i in 1:nsims){
+  x <- runif(1, min = 0, max = 1)
+  xrecords[i] <- x 
+}
+
+e_r = sum(xrecords)/10000 # .50029
+```
+
+# 5b. Use R to numerically estimate P(X<Y) for X - N(0,1), Y - N(1,5) w X and Y being independent. 
+```{r}
+set.seed(100)
+
+nsims = 10000
+records_x_y = rep(0,nsims)
+
+for(i in 1:nsims){
+  x <- rnorm(1, mean = 0, sd = 1)
+  y <- rnorm(1, mean = 1, sd = 5)
+  records_x_y[i] <- (x<y)
+}
+
+exy = sum(records_x_y)/nsims # .5759
+
+```
+
+
 # 6b. Use R to calculate the Monte Carlo estimates of mean + SD of x-y.
 ```{r}
 set.seed(100)

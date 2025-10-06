@@ -9,9 +9,9 @@ output: pdf_document
 #loading the package that includes rv distributions
 library(stats)
 ```
-
+# 2a.Use simulations to numerically estimate mean & variance of A. 
 ```{r}
-#setting a seed so its reproducable
+#setting a seed so its reproducible
 set.seed(99)
 
 nsims=10000
@@ -24,5 +24,33 @@ for(i in 1:nsims){
 
 #expectation of the area (the area is the records)
 e_a = sum(records)/nsims #1.048
-var_a = 
+var_a = var(records) #.8768
 ```
+
+# 3a. Use simulations to gain understadning about the distribution of R. Numerically estimate the expected value of R and 1/R. 
+```{r}
+#set seed
+set.seed(100)
+
+nsims=10000
+records_x = rep(0,nsims)
+records_y = rep(0,nsims)
+records_rati = rep(0,nsims)
+one_r = rep(0,nsims)
+
+for(i in 1:nsims){
+  x <- runif(1, min = 0, max = 1)
+  y = 1-x
+  records_x[i] <- x
+  records_y[i] <- y
+  records_ratio[i] <- (x/y)
+  one_r[i] <- (y/x)
+}
+
+e_r = sum(records_ratio)/10000 #9.0554
+e_r_one = sum(one_r)/10000 #8.438
+
+```
+
+# 6b. Use R to calculate the Monte Carlo estimates of mean + SD 
+

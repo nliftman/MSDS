@@ -52,5 +52,25 @@ e_r_one = sum(one_r)/10000 #8.438
 
 ```
 
-# 6b. Use R to calculate the Monte Carlo estimates of mean + SD 
+# 6b. Use R to calculate the Monte Carlo estimates of mean + SD of x-y.
+```{r}
+set.seed(100)
+
+nsims=10000
+records_x = rep(0,nsims)
+records_y = rep(0,nsims)
+records_ratio = rep(0, nsims)
+
+for(i in 1:nsims){
+  x <- rnorm(1, mean = 69.1, sd = 2.9)
+  y <- rnorm(1, mean = 63.7, sd = 2.7)
+  records_x[i] <- x
+  records_y[i] <- y
+  records_ratio[i] <- (x - y)
+}
+
+e_r = sum(records_ratio)/10000 # 5.396
+sd <- sd(records_ratio) #3.942
+```
+
 

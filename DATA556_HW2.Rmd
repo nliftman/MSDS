@@ -6,8 +6,9 @@ output: pdf_document
 ---
 
 ```{r}
-#loading the package that includes rv distributions
+#loading the package that includes rv distributions and ggplot
 library(stats)
+library(ggplot2)
 ```
 # 2a.Use simulations to numerically estimate mean & variance of A. 
 ```{r}
@@ -109,6 +110,19 @@ sd <- sd(records_ratio) #3.942
 # 6c. What is the probability that a randomly sampled man is taller than a randomly sampled woman?
 ```{r}
 pnorm(63.7, mean = 5.4, .2, lower.tail = FALSE)
+```
+
+# 7b. For y = 0 make a plot for P(theta given y) for each theta within {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0}. Make a plot with horizontal axis the 11 values of theta and verticle the P(theta given y).
+
+```{r}
+#making a df 
+theta <- c(0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1)
+p_theta <- c(1, .59, .33, .17, .08, .03, .01, .002, 0, 0, 0)
+
+df_theta <- data.frame(theta, p_theta)
+
+ggplot(df_theta, aes(x= theta, y = p_theta)) + geom_point()
+
 ```
 
 

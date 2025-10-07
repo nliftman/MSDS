@@ -106,4 +106,9 @@ e_r = sum(records_ratio)/10000 # 5.396
 sd <- sd(records_ratio) #3.942
 ```
 
+# 6c. What is the probability that a randomly sampled man is taller than a randomly sampled woman?
+```{r}
+pnorm(63.7, mean = 5.4, .2, lower.tail = FALSE)
+```
+
 

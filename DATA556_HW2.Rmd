@@ -36,7 +36,7 @@ set.seed(100)
 nsims=10000
 records_x = rep(0,nsims)
 records_y = rep(0,nsims)
-records_rati = rep(0,nsims)
+records_ratio = rep(0,nsims)
 one_r = rep(0,nsims)
 
 for(i in 1:nsims){
@@ -159,7 +159,25 @@ df_theta_5 <- data.frame(theta, p_theta)
 ggplot(df_theta_5, aes(x= theta_5, y = p_theta_5)) + geom_point()
 ```
 
+# 8b. Implement your sampling algoritm in R and use your code to produce a Monte Carlo estimate of P(X lives within (2,3)) where X is a r.v. with a logistic distribution. 
 
+```{r}
+#setting a seed so its reproducible
+set.seed(99)
+
+nsims=10000
+records = rep(0,nsims)
+records
+
+for(i in 1:nsims){
+  x <- runif(1, min = 0, max = 1)
+  xmake_change <- ((1/x) + 1)
+  xlogistic <- -log(xmake_change, base = exp(1))
+  records[i] <- (2 < xlogistic & xlogistic < 3)
+}
+
+# The probability is zero becuase non of ours fall between 2 and three?
+```
 
 
 

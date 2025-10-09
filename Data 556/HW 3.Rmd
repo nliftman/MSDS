@@ -1,0 +1,25 @@
+---
+title: "HW 3"
+output: html_document
+---
+
+```{r message = FALSE, warning = FALSE, error = FALSE}
+#load libraries
+library(stats)
+library(ggplot2)
+library(DescTools)
+```
+
+# 1a. Let U follow Uniform(a,b) Use simulations to numerically estimate the median and the mode of U for a = 0 and b = 2. 
+
+```{r}
+#set seed
+set.seed(99)
+
+uniform_values = runif(100, min = 0, max = 2)
+
+median(uniform_values)
+#it cannot find the mode because a uniform variable does not have a mode! 
+Mode(uniform_values)
+```
+

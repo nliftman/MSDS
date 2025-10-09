@@ -41,6 +41,31 @@ median(expo_values)
 Mode(expo_values)
 ```
 
+# 3a. Use R to numerically estimate all means and modes of X for n = 1,2,..10.
+
+```{r}
+set.seed(99)
+mean(runif(1))
+Mode(runif(1))
+mean(runif(2))
+Mode(runif(2))
+mean(runif(3))
+Mode(runif(3))
+mean(runif(4))
+Mode(runif(4))
+mean(runif(5))
+Mode(runif(5))
+mean(runif(6))
+Mode(runif(6))
+mean(runif(7))
+Mode(runif(7))
+mean(runif(8))
+Mode(runif(8))
+mean(runif(9))
+Mode(runif(9))
+mean(runif(10))
+Mode(runif(10))
+```
 
 
 

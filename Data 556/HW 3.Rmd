@@ -67,6 +67,17 @@ mean(runif(10))
 Mode(runif(10))
 ```
 
+# 6a. Let X and Y be iid ~Unif(0,1). Numerically estiamte the covariance of X+Y and X-Y.
+
+```{r}
+#we know covariance is E(XY) - E(X)E(Y)
+set.seed(100)
+
+x = runif(10000, min = 0, max =1)
+y = runif(10000, min = 0, max =1)
+
+cov(x+y,x-y) 
+```
 
 
 

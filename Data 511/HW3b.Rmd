@@ -1,0 +1,129 @@
+---
+title: "HW3b"
+output: html_document
+---
+
+```{r}
+#load libraries
+library(rio)
+library(ggplot2)
+library(tidyverse)
+library(stringr)
+```
+
+```{r}
+#importing the data
+cars <- import("2004_cars_data.csv")
+
+#cars things
+
+
+
+#maybe manipulating
+cars_new <- separate(cars, Vehicle, into = c("model", "make"), sep = "^\\S*\\K\\s+")
+
+#looking at counts
+cars_new %>% 
+  count(model)
+
+#who owns what
+cars_new[cars_new == "Ford"] <- "Ford Motor Co."
+cars_new[cars_new == "GMC"] <- "General Motors Co."
+cars_new[cars_new == "Honda"] <- "Honda Motor Co."
+cars_new[cars_new == "Hummer"] <- "General Motors Co."
+cars_new[cars_new == "Hyundai"] <- "Hyundai Motor Group"
+cars_new[cars_new == "Infiniti"] <- "Renault-Nissan-Mitsubishi Alliance"
+cars_new[cars_new == "Isuzu"] <- "General Motors Co."
+cars_new[cars_new == "Jaguar"] <- "Tata Motors"
+cars_new[cars_new == "Jeep"] <- "Fiat Chrysler Automobiles"
+cars_new[cars_new == "Kia"] <- "Hyundai Motor Group"
+cars_new[cars_new == "Acura"] <- "Honda Motor Co."
+cars_new[cars_new == "Audi"] <- "Volkswagen Group"
+cars_new[cars_new == "BMW"] <- "BMW Group"
+cars_new[cars_new == "Buick"] <- "General Motors Co."
+cars_new[cars_new == "CMC"] <- "General Motors Co."
+cars_new[cars_new == "Cadillac"] <- "General Motors Co."
+cars_new[cars_new == "Chevrolet"] <- "General Motors Co."
+cars_new[cars_new == "Chrvsler"] <- "Fiat Chrysler Automobiles"
+cars_new[cars_new == "Chrsyler"] <- "Fiat Chrysler Automobiles"
+cars_new[cars_new == "Dodge"] <- "Fiat Chrysler Automobiles"
+cars_new[cars_new == "Land"] <- "Tata Motors"
+cars_new[cars_new == "Lexus"] <- "Volkswagen Group"
+cars_new[cars_new == "Lincoln"] <- "Ford Motor Co."
+cars_new[cars_new == "Mazda"] <- "Mazda Motor Co."
+cars_new[cars_new == "Mazda6"] <- "Mazda Motor Co."
+cars_new[cars_new == "Mercedes-Benz"] <- "Damler AG"
+cars_new[cars_new == "Mercury"] <- "Ford Motor Co."
+cars_new[cars_new == "Mini"] <- "BMW Group"
+cars_new[cars_new == "Misubishi"] <- "Renault-Nissan-Mitsubishi Alliance"
+cars_new[cars_new == "Nissan"] <- "Renault-Nissan-Mitsubishi Alliance"
+cars_new[cars_new == "Oldsmobile"] <- "General Motors Co."
+cars_new[cars_new == "Pontiac"] <- "General Motors Co."
+cars_new[cars_new == "Porsche"] <- "Volkswagen Group"
+cars_new[cars_new == "Saab"] <- "General Motors Co."
+cars_new[cars_new == "Saturn"] <- "General Motors Co."
+cars_new[cars_new == "Scion"] <- "Toyota Motor Co."
+cars_new[cars_new == "Subaru"] <- "Subaru Co."
+cars_new[cars_new == "Suzuki"] <- "Suzuki Motor Co."
+cars_new[cars_new == "Toyota"] <- "Toyota Motor Co."
+cars_new[cars_new == "Volkswagen"] <- "Volkswagen Group"
+cars_new[cars_new == "Volvo"] <- "Zhejiang Geely Holding Group"
+cars_new[cars_new == "Chrysler"] <- "Fiat Chrysler Automobiles"
+cars_new[cars_new == "Ford Motor Co. "] <- "Ford Motor Co."
+cars_new[cars_new == "Mitsubishi"] <- "Renault-Nissan-Mitsubishi Alliance"
+
+cars_new %>% 
+  count(model)
+
+#making small and large
+cars_final <- cars_new %>% 
+  mutate(size = Weight > 3500)
+
+cars_final[cars_final == "TRUE"] <- "Large"
+cars_final[cars_final == "FALSE"] <- "Small"
+```
+
+
+
+# first attempts at plotting
+```{r}
+ggplot(data = cars, aes(x = Retail_Price, y = Dealer_Cost, color = HP, size = Engine_Size)) + geom_jitter(height = 10000)
+```
+
+```{r}
+ggplot(data = cars, aes(x = City_MPG, y = Hwy_MPG)) + geom_point()
+```
+
+```{r}
+ggplot(data = cars, aes(x=Len, y = Width)) + geom_point()
+```
+
+```{r}
+ggplot(data = cars_final, aes(x = City_MPG, y = Hwy_MPG, shape = model)) +
+  geom_point(aes(colour=model, fill=model, shape = model), 
+  shape = 21,size = 3,colour = "black")  +
+  geom_line(data = cars_final, aes(x = City_MPG, y = Hwy_MPG, color = model)) 
+```
+```{r}
+ggplot(data = cars_final, aes(x = City_MPG, y = Hwy_MPG, shape = model)) +
+  geom_line(data = cars_final, aes(x = City_MPG, y = Hwy_MPG, color = model)) 
+```
+
+```{r}
+ggplot(data = cars_final, aes(x = Len, y = Width, shape = model)) +
+  geom_line(data = cars_final, aes(x = Len, y = Width, color = model)) 
+```
+
+
+
+
+```{r}
+ggplot(data = cars_final) +
+  geom_point(aes(x = Len, y = Width, color = model, size = Hwy_MPG))
+```
+
+```{r}
+write.csv(cars_final, "carsfinaltotableau.csv")
+```
+
+

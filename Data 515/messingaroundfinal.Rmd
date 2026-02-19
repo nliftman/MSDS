@@ -1,0 +1,29 @@
+---
+title: "messingaroundfinal"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+#load in the masterdoc
+master <- read_csv("badwords_masterdoc.csv") %>% 
+  select(1)
+#this contains 3854 words
+#remove duplicates
+master_unique <- unique(master) %>% 
+  rename(spaces = 1)
+#down to 3186 words
+#now create one with no spaces
+unique_nospace <- as.data.frame(apply(master_unique, 2, function(x) gsub('\\s+', '', x))) %>% 
+  rename(nospace = 1)
+#merge them together
+total <- cbind(master_unique, unique_nospace)
+#remove any where without spaces it is longer than 7
+total_filtered <- total %>% 
+  filter(nchar(spaces) < 8)
+#down to 1629! 
+#we just need to put her in python and remove all of the odd things! 
+
+write.csv(total_filtered, file = "uniqueevilmasterdoc.csv", row.names = FALSE)
+```
+

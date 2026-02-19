@@ -1,0 +1,90 @@
+---
+title: "HW 3A"
+output: html_document
+---
+
+```{r message = FALSE, warning = FALSE, error = FALSE}
+#load libraries
+library(rio)
+library(ggplot2)
+library(tidyverse)
+library(naniar)
+```
+
+```{r}
+worlddf <- import("world indicators exercise.csv") %>% 
+  rename("Country_Name" = 1,
+         "Series_code" = 4,
+         "1960" = 5,
+         "2018" = 63,
+         "Series_name" = 3)
+```
+
+```{r}
+# Remove any extra rows with invalid values (take a look at Country Name)
+world <- worlddf[-c(67:69), ]
+
+#Filter the data to just the United States and United Kingdom
+worldusuk <- world %>% 
+  filter(Country_Name == "United States" | Country_Name ==  "United Kingdom")
+
+#drop the series code column
+worldusuk <- worldusuk %>% 
+  select(-c(Series_code))
+
+#pivot all years of data into a single column
+pivot_world <- worldusuk %>% 
+  pivot_longer(cols = c("1960":"2018")) %>% 
+  rename(year = name)
+
+#this is me
+#dropping the []
+pivot_world$year <- gsub("\\[.*","", pivot_world$year)
+
+#creating a unique indicator
+pivot_world$ID <- seq.int(nrow(pivot_world))
+
+#writing a csv so hopefully this could work in tableau??? it doenst???
+#write.csv(pivot_world, "pivotedbutneedmore.csv")
+
+#pivot wider to have indicator names as columns
+pivot_part2 <- pivot_world %>% 
+  pivot_wider(id_cols = ID, 
+              names_from = Series_name,
+              values_from = value)
+
+#combining the pivot_part2 with the pivot_world
+pivotall <- full_join(pivot_world, pivot_part2)
+
+#transfering all .. to NA
+pivotall2 <- replace_with_na_all(data = pivotall, condition = ~.x == "..")
+
+#drop series name and id
+pivotall2 <- pivotall2 %>% 
+  select(-c(Series_name, ID, value))
+
+# drop all but C02 emissions, population total, agricultural land
+pivotall3 <- pivotall2 %>% 
+  select(1, 2, 3, 6, 10, 12) %>% 
+  rename(Agland = 4,
+         co2 = 5, 
+         pop = 6)
+
+#have to make numeric
+#rename stuff
+# Create a derived column called CO2 emissions (kt per person) using the calculation: CO2 emissions(kt) / Population total
+pivot_part2_co[, 1:3] <- sapply(pivot_part2_co[, 1:2], as.factor)
+
+finaldataset <- pivot_part2_co %>% 
+  as.numeric(Agland) %>% 
+  as.numeric(co2) %>% 
+  as.numeric(pop)
+  mutate("C02 Emissions (kt per person)" = "CO2 emissions (kt)") 
+```
+
+Filter the data to just the United States and United Kingdom
+Drop  the Series Code column
+Pivot all years of data into a single column
+Un-Pivot all indicator names from rows into columns
+Drop all but the following indicators: CO2 emissions (kt), Population total,  Agricultural land (sq. km)
+Create a derived column called CO2 emissions (kt per person) using the calculation: CO2 emissions(kt) / Population total

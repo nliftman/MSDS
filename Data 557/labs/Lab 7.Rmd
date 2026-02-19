@@ -1,0 +1,143 @@
+---
+title: "Lab 7"
+author: "DATA 557"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set-up
+
+Non-resampling based methods typically rely on the central limit theorem (and other asymptotic approximations to distributions).
+
+In this lab, we'll explore resampling and permutation methods, contrasting them with non-resampling methods. 
+
+We will use the `PlantGrowth` dataset in `R`:
+
+```{r warning = FALSE, message = FALSE, error = FALSE}
+library(tidyverse)
+data(PlantGrowth)
+?PlantGrowth
+```
+
+This dataset contains the dried weight of plants from an experiment that involved a control and two different treatment conditions.
+
+## Questions
+
+1. Comment briefly on what you notice from the following stratified boxplot:
+
+```{r}
+boxplot(weight ~ group, data = PlantGrowth, 
+        main = "PlantGrowth data",
+        ylab = "Dried weight of plants")
+```
+
+The first thing we notice is that the control has a median that is higher than treatment 1 by a lot, but is less than tr2 by a little. We can also see that there is an outlier in treatment group 1. 
+
+
+In the next two questions, you will compare intervals constructed using the bootstrap and two-sample procedures.
+
+2. Use the bootstrap to construct the sampling distribution of the difference in the mean weight between plants in the treatment 1 group and the control group. To do this, construct bootstrap resamples of each group separately, and then find the difference in the sample means between the groups. Use 1,000 bootstrap samples. Make a histogram showing the sampling distribution.
+
+```{r}
+#load library
+library(stats)
+library(ggplot2)
+library(EnvStats)
+#set seed
+set.seed(420)
+#how many bootstraps to do 
+B <- 1000
+#initializing the mean vectors
+meanhat_c <- c()
+meanhat_1 <- c()
+meanhat_2 <- c()
+#get the mean hats
+for (i in 1:B){
+  plant.resample <- sample(PlantGrowth$weight, replace = TRUE)
+  first <- (plant.resample[1:10])
+  second <- (plant.resample[11:20])
+  third <- (plant.resample[21:30])
+  meanhat_c[i] <- mean(first)
+  meanhat_1[i] <- mean(second)
+  meanhat_2[i] <- mean(third)
+}
+#turning it into a df 
+planthats <- data.frame(control = meanhat_c, first = meanhat_1, second = meanhat_2)
+#difference 
+planthats_dif <- planthats %>% 
+  mutate(dif = first - control)
+
+#true dif 
+ctrl <- (PlantGrowth[1:10,])
+trt1 <- (PlantGrowth[11:20,])
+sum(ctrl$weight)/10 - sum(trt1$weigt)/10
+#true dif = 5.032
+
+#histogram
+ggplot(data = planthats_dif) +
+  geom_histogram(aes(x = dif)) +
+  theme_bw()
+```
+
+
+3. Using the quantiles of the sampling distribution constructed in Question 2, construct a 95% confidence interval for the true difference in means. Contrast your interval with a 95% confidence interval constructed using two sample procedures. (i.e., methods discussed in Weeks 3-4)
+
+Using the bootstrap we get a confidence interval of (4.655925, 5.494100 ). Using a two-sample t-test for the original data we get an interval of (-0.2875162, 1.0295162).
+```{r}
+quantile(planthats_dif$control, probs = c(.025, .975))
+cont <- (PlantGrowth$weight[1:10])
+t1 <- (PlantGrowth$weight[11:20])
+t.test(cont, t1)$conf.int
+```
+
+
+In the next 4 questions, you will compare tests for equality of means across groups. 
+
+4. What is a (non-resampling-based) method for testing the null hypothesis that the means of the three treatment groups are the same? Calculate the test statistic for this data. What is the distribution of this test statistic under the null hypothesis? What is the p-value?
+
+
+We are going to perform an ANOVA test for a group of variables. And we are testing that at least one of the variables as a $Beta$ of something other than zero. 
+
+We get a test-statistic of 4.846 which follows a f-distribution under the null hypothesis. We get a p-value of 0.0159. This tells us at the alpha = 0.05 level we will reject the null hypothesis and conclude that at least one of the groups has an effect on the expected weight. 
+
+```{r}
+anova_model <- aov(weight ~ group, data = PlantGrowth)
+
+# View results
+summary(anova_model)
+```
+
+
+5. Now, construct a permutation test of the same null hypothesis. Do this by randomly reordering the plant `weight`s such that the `weight` of observation 1 is equally likely to be attributed to observation $1, 2, 3, \ldots, 30$ (and similarly for observation 2, and so on). Use 1,000 permutations. Calculate the same test statistic you used in Question 4 for each permuted dataset, and visualize the distribution of the test statistics using a histogram.
+
+```{r}
+test <- twoSamplePermutationTestLocation(cont, t1, fcn = "mean", exact = FALSE, alternative ="two.sided", n.permutations = 1000)
+
+test$statistic
+hist(test$stat.dist)
+```
+ 
+We get a test-statistic of 0.371 and a histogram above. 
+
+6. Recall that a p-value is the probability (under the null hypothesis) of obtaining a result as extreme or more extreme than the one that you observed. Using the the sampling distribution that you constructed in Question 5, calculate a p-value for the test that the means of the three treatment groups are the same. What would you conclude at a significance level of 0.05? 
+
+```{r}
+test$p.value
+```
+
+We get a p-value 0.258. This means that we fail to reject the null hypothesis. The null hypothesis is that all permutations are equally likely. So we would conclude that we do not have statistically significant evidence to reject the null. 
+
+7. Contrast the distribution of the test statistic under the null hypothesis  (from Question 4) to the distribution of the test statistic under the null hypothesis that you found in Question 6. Comment on similarities and differences. 
+
+These should be similar distribution. The differences is that the F distribution with df (2,27) is for modeling populations while the distribution in Question 6 models a sample. They are both based on a population that then created our sample, so we would expect them to be similar but not exactly the same. 
+
+
+Responses to the following questions **do not need to be submitted**. They are to help you understand why and how permutation tests "work". 
+
+- Why does the reordering approach from Question 5 generate data under the null hypothesis? 
+- Why do we need to generate data under the *null* hypothesis (as opposed to under the *alternative* hypothesis) to find a p-value using resampling approaches?
+- As you can see, there are multiple ways to construct the sampling distribution of a test statistic under the null hypothesis. These approaches may not yield the same sampling distribution. How can they both be *valid* even if they are not *the same*?
+

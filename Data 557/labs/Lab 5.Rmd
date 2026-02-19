@@ -1,0 +1,93 @@
+---
+title: "Lab 5"
+author: "DATA 557"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Context
+
+It is now widely believed that smoking tends to impair lung function. Much of the data to support this arises from studies of pulmonary function in adults who are long-time smokers. A question then arises whether such deleterious effects of smoking can be detected in children who smoke. To address this question, measures of lung function were made in 654 children seen for a routine check up in a particular pediatric clinic. The children participating in this study were asked whether they were current smokers.
+
+A common measurement of lung function is the forced expiratory volume (FEV), which measures how much air you can blow out of your lungs in a short period of time. A higher FEV is usually associated with better respiratory function. It is well known that prolonged smoking diminishes FEV in adults, and those adults with diminished FEV also tend to have decreased pulmonary function as measured by other clinical variables, such as blood oxygen and carbon dioxide levels.
+
+Here, we will practice fitting linear regressions using the FEV dataset. 
+
+## Reading in the Data
+
+```{r, message=FALSE}
+library(tidyverse)
+library(sandwich)
+library(lmtest)
+fev <- read_csv("fev.csv")
+```
+
+The columns are:
+
+- `seqnbr`: case number (the numbers 1 to 654)
+- `subjid`: subject identification number (unique for each different child)
+- `age`: subject age at time of measurement (years)
+- `fev`: measured FEV (liters per second), a measure of lung capacity
+- `height`: subject height at time of measurement (inches)
+- `sex`: sex of the subject (`female` and `male`)
+- `smoke`: smoking habits (`nonsmoker` or `smoker`)
+
+
+**Question 1**: Fit a linear regression model with `fev` as response and `smoke` as the predictor. Provide an interpretation for the coefficient on `smoke` including an estimate and 95% confidence interval.
+
+```{r}
+smokemodel <- lm(fev ~ smoke=="smoker", data = fev)
+summary(smokemodel)
+confint(smokemodel, level = .95)
+```
+
+Because our model has an x variable which is binary (smoker and nonsmoker) we get a coefficient of "smokersmoker" which refers to the group of people who are smokers. So we get an estimation of the coefficient of smokers as 0.71072. Which means that the difference between measured FEV (liters per second), a measure of lung capacity, for smokers is 0.71072 larger than the group of people who do not smoke. We get a confidence interval of (0.4948346, 0.9266033) for smokers. This means that we are 95% confident that the true population coefficient of smokers is between these two values. 
+
+**Question 2**: Assess the assumptions of linearity, constant variance and normality using residual plots. Comment on what you notice.
+
+```{r}
+plot(smokemodel)
+fev2 <- fev %>% 
+  mutate(residuals = smokemodel$residuals)
+
+fev2 %>% 
+  ggplot(aes(x = smoke, y = residuals)) +
+  geom_boxplot()
+
+```
+
+Looking at the Q-Q residuals plot we can see is that it is slightly not normal (since there is curvature on the tails). Looking at the residuals versus the fitted value we can see that there is not constant variance (homoskedacisity) because the variance for non smokers is much greater than the variation for smokers. To check linearity we can look at the other plot I created, which shows that the median of the residuals is near zero and they appear to be similarly distributed. 
+
+
+**Question 3**: Fit a linear regression model with `fev` as response and `height` as the predictor. Provide an interpretation for the coefficient on `height`, including an estimate and 95% confidence interval.
+
+```{r}
+height <- lm(fev ~ height, data = fev)
+summary(height)
+confint(height, level = .95)
+```
+We get an estimated coefficient of height as 0.131976. This means that holding all else constant we have an increased FEV of 0.131976 for every single increase in inches of height. We also get a confidence interval of (0.1261732, 0.137778) which tells us that we are 95% confident that the true population coefficient for height is between (0.1261732, 0.137778). 
+
+**Question 4**: Convert height from inches to centimeters and fit a new simple linear regression model. Interpret the coefficient, including an estimate and 95% confidence interval.
+
+```{r}
+fevcm <- fev %>% 
+  mutate(heightcm = height*(2.54))
+heightcm <- lm(fev ~ heightcm, data = fevcm)
+summary(heightcm)
+confint(heightcm, level = .95)
+```
+
+We find an estimation of the height coefficient is 0.051959. This means that we predict that for every single increase in a centimeter for the height of an individual the FEV should increase by 0.051959. We also get a confidence interval of (0.04967448, 0.05424329). This tells us that we are 95% confidence that the true population coefficient falls between (0.04967448, 0.05424329). 
+
+**Question 5**: Compare and contrast your results in Questions 3 and 4. 
+```{r}
+0.051959 * 2.54
+```
+
+
+What we found in each part is the exact same thing. Because we shifted all of our data by a constant value all we did was shift our linear model up by 2.54 (or what you must multiply inches by to get cm). So nothing has actually changed except our units. 
+

@@ -1,0 +1,121 @@
+---
+title: "Lab 4"
+author: "DATA 557"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning = FALSE, error = FALSE}
+library(ggplot2)
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Experiment
+
+The data for this lab assignment comes from a "MythBusters" episode. In this episode, the team wanted to know whether yawning is contagious.
+
+The team recruited 50 individuals. 34 were randomly assigned to the "stimulus" group (a person near them yawned) and 16 to the "no stimulus" group (did not see someone yawn). They were then observed for a certain amount of time to see who yawned.
+
+The team reports that when the people they tested had no stimulus they yawned 25% of the time and when the people they tested had the stimulus they yawned 29% of the time.
+
+
+## The Data
+
+
+```{r}
+yawn_data <- data.frame(group = c(rep("stimulus", 34), rep("no stimulus", 16)),
+                        outcome = c(rep("yawn", 10), rep("no yawn", 24),
+                                    rep("yawn", 4), rep("no yawn", 12)))
+table(yawn_data$group, yawn_data$outcome)
+```
+
+**Question 1**: Confirm the proportions (25% and 29%) from the MythBusters episode. 
+```{r}
+10/34
+4/16
+```
+
+Yes we got .25 and .29. 
+
+**Question 2**: Do you agree with the MythBuster's conclusion that this data is "conclusive"? What does your intuition tell you about the strength of evidence regarding the contagiousness of yawning?
+
+It's possible that the observed difference (25% vs 29%) is because yawning is contagious (seeing someone yawn and yawning are not independent events), but it could also be that the differences are due to chance (seeing someone yawn and yawning are independent). If we were to repeat the experiment, we would expect slightly different results. Here, we will simulate data to generate the distribution of the difference in proportions between the two groups under the null hypothesis.
+
+I do not agree with this conclusion. My intuition is telling me that this is not conclusive for two reasons. The first is that there does not appear to be a small difference between 25% and 29%. We also have a very small sample size and only ran a single experiment. 
+
+
+**Question 3**: What are the null and alternative hypotheses?
+
+Our null hypothesis: $H_0 : \mu_{stim} = \mu_{non stim}$ and our alternate hypothesis: : $H_a : \mu_{stim} \neq \mu_{non stim}$
+
+We are going to run a **permutation test,** which is the same as an exact test of independence. We will discuss permuation tests more later on in the quarter.
+
+To implement the permutation test, we will 
+
+1. Take the observed outcomes: 14 yawners and 36 non-yawners
+2. Randomly shuffle the order of these outcomes
+3. Assign the shuffled outcomes into a stimulus group of size 34 and a no-stimulus group of size 16
+4. Compute the difference in yawning proportions between the two groups
+5. Repeat this process many times to build a null distribution of differences
+
+**Question 4**: Explain how the above simulation describes simulated data under the *null* hypothesis. 
+
+This simulation describes data under the null hypothesis because the null hypothesis states there is no difference between the yawners and the non-yawners. And we assigning things randomly, which means we are assuming theres no difference between the two. 
+
+**Question 5**: Write out the code for implementing one such experiment. 
+
+```{r}
+#duplicate of dataset
+
+shuffled <- yawn_data 
+
+diff_df <-data.frame(dif = NA)
+
+shuffled$outcome <- sample(shuffled$outcome)
+count_shuf <- shuffled %>% 
+  group_by(group) %>% 
+  count(outcome)
+#this pulls rows 1 and 3 for the n and returns the proportions
+no_stim = count_shuf[1,3]/16
+stim = count_shuf[3,3]/36
+difference  <- stim - no_stim
+diff_df[nrow(diff_df) + 1,] = difference
+```
+
+
+**Question 6**: Write code to repeat this experiment 10,000 times and for each experiment record the difference in the sample proportions
+
+```{r}
+diff_df <-data.frame(dif = NA)
+
+
+for (x in 1:10000) {
+shuffled$outcome <- sample(shuffled$outcome)
+count_shuf <- shuffled %>% 
+  group_by(group) %>% 
+  count(outcome)
+#this pulls rows 1 and 3 for the n and returns the proportions
+no_stim = count_shuf[1,3]/16
+stim = count_shuf[3,3]/36
+difference  <- stim - no_stim
+diff_df[nrow(diff_df) + 1,] = difference}
+
+#drop the first row! 
+diff_df <- data.frame(diff_df[-1,])
+
+
+#trying to rename it but its not renaming??
+diff_df <- diff_df %>% 
+  rename("differences" = 1)
+
+```
+
+
+**Question 7**:  Create a histogram of the 10,000 differences in the sample proportions. Add a line representing the observed difference from the MythBusters' data. Do the simulation results suggest that yawning is contagious?
+
+```{r}
+hist(diff_df$differences) 
+abline(v = .04, col = "blue")
+```
+
+This histogram shows us that there is in general zero or very small differences between the groups. Thus we are lead to believe that yawning is not contagious. 

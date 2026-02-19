@@ -1,0 +1,662 @@
+---
+title: "Simulation Project 2"
+author: "Naomi Liftman"
+date: "Feb 1, 2026"
+output: pdf_document
+---
+
+## Part 1 
+### Question 1.
+
+We will measure the empirical power of this test for difference of proportions as the proportion of trials where we have a significant result. Thus we will generate 1,000 experiments of 10,000 people for control and ad groups. Then find the proportion of each of those groups who purchased the product and perform a two-proportion z-test to determine if there is a difference in proportions. We will then count how many of those z-tests return a significant p-value and that will be our empirical power. 
+
+We found that out of our 1,000 tests we found 674 of them returned a p-value that was significant at the .05 level. Thus the empirical power of our two-proportion z-test is .674. 
+
+### Question 2. 
+
+We will perform the same steps that we took in step two but with the changed sample sizes. What we find is that for scenario (1) we get an empirical power of .822. For scenario (2) we get an empirical power of .276 For our final scenario (3) we get an empirical power of .948. We can see that we have a greatly increased empirical power if we add the people to either both the control and the treatment groups or just the treatment group. But we see a great decrease in empirical power when we add the individuals to the control.
+
+### Question 3. 
+
+Next, we’ll explore what happens to the power of the test as we change the true proportion of those who purchase the product in the treatment group. Conduct 1,000 simulations where the true proportion who purchase the product in the treatment group varies between 1.5% and 3% (use 1.5%, 3%, and several numbers in between). Continue using the original 10,000 in each group. Create a plot of the power of the test as a function of the true proportion of those who purchase the product in the treatment group.
+
+```{r echo = FALSE, warning = FALSE, error = FALSE, message = FALSE}
+#blank dataset
+library(tidyverse)
+library(ggplot2)
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.015)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+#datasetyy2 %>% 
+ # count(yes < 0)
+
+#get a count of 766 
+#now adding that to our power df <3
+powerdf <- data.frame(pop_prop = 1.5, power = .766)
+
+#now repeating for a ton of true pop proportions! 
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.018)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+#datasetyy2 %>% 
+ # count(yes < 0)
+## we get 179 which is crazy different?
+
+#adding it to the powerdf
+powerdf[nrow(powerdf) + 1,] = c(1.8, .179)
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.02)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+#datasetyy2 %>% 
+ # count(yes < 0)
+
+#adding it to the powerdf
+powerdf[nrow(powerdf) + 1,] = c(2.0, .061)
+
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.023)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+#datasetyy2 %>% 
+#  count(yes < 0)
+
+powerdf[nrow(powerdf) + 1,] = c(2.3, .307)
+
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.026)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+#datasetyy2 %>% 
+ # count(yes < 0)
+
+powerdf[nrow(powerdf) + 1,] = c(2.6, .816)
+
+
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.028)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+#datasetyy2 %>% 
+ # count(yes < 0)
+
+powerdf[nrow(powerdf) + 1 ,] = c(2.8, .969)
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.03)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+#datasetyy2 %>% 
+ # count(yes < 0)
+
+powerdf[nrow(powerdf) + 1 ,] = c(3.0, .994)
+
+ggplot(data = powerdf) +
+  geom_point(aes(x = pop_prop, y = power)) + 
+  geom_line(aes(x = pop_prop, y = power, color = "red")) +
+  labs(title = "Plot of Power as a Function of the True Population Proportion of Treatment") +
+  theme_bw()
+```
+
+We can see that as the true proportion of the treatment group gets closer to the true proportion of the control group the power greatly decreases. This makes sense because empirical power is the proportion of tests where we get a statistically significant result. We would not expect to get many statistically significant results when the true population proportions are the same because our significant result says that we have evidence to suggest that there are differences in the proportions. 
+
+### Paragraph
+
+What we found is that there are a few factors that change the empirical power of a test. We found that the sample sizes and true population proportions can greatly effect the power. For sample size, increasing the number of participants in the control and treatment groups increases the power and increasing the number of participants in the treatment group only increases the power even more! We also found that increasing the sample size of the control group decreases the empirical power. As for the true population proportion, we found that as they get closer to each other (as ${p}_{control} = {p}_{treatment}$) the empirical power decreases. These findings relate to linear regression because linear regression with a binary predictor is the same as a two sample t-test assuming equal variances. 
+
+Implications for these findings in practice is the idea that we should design our experiments around these concepts to maximize our empirical power. It is also important because if we are given the sample sizes and the true population proportions we can get a good idea about how strong the empirical power will be without actually performing any tests. 
+
+## Part 2 - Normality 
+### Question 1.
+ 
+```{r echo = FALSE, warning = FALSE, error = FALSE, message = FALSE}
+set.seed(19)
+
+normaldata <- data.frame(intercept = NA, x = NA, seintercept = NA, sex = NA, cixlower = NA, cixupper = NA)
+chidata <- data.frame(intercept = NA, x = NA, seintercept = NA, sex = NA, cixlower = NA, cixupper = NA)
+
+for (x in 1:10000) {
+n = 100
+x <- seq(0, 1, length.out = n)
+y_norm <- x + rnorm(n, 0, sd=2) 
+y_chisq <- x + (rchisq(n, 2)-2)
+mod_norm <- lm(y_norm ~ x)
+mod_chisq <- lm(y_chisq ~ x)
+normaldata[nrow(normaldata) + 1,] = c(mod_norm$coefficients, coef(summary(mod_norm))[, "Std. Error"], confint(mod_norm, x, level = .95))
+chidata[nrow(chidata) + 1, ] = c(mod_chisq$coefficients, coef(summary(mod_chisq))[, "Std. Error"], confint(mod_chisq, x, level = .95))}
+
+#drop first for both
+normaldata <- data.frame(normaldata[-1,])
+chidata <- data.frame(chidata[-1,])
+
+#drop first for both
+normaldata <- data.frame(normaldata[-1,])
+chidata <- data.frame(chidata[-1,])
+
+#histograms
+ggplot() +
+  geom_histogram(data = normaldata, aes(x = x)) + 
+  labs(title = "Histogram of Estimated Normal Slopes")
+
+ggplot() +
+  geom_histogram(data = chidata, aes(x = x)) + 
+  labs(title = "Histogram of Estimated Chi-Squared Slopes")
+
+```
+
+For the histogram of the normal distribution's $\beta_{1}$ values we can see it is centered slightly above 1, but is a nearly normal curve with a range of -2 to 4. 
+
+For the histogram of the chi-squared distribution's $\beta_{1}$ values we can see it is centered slightly below 1, has a somewhat normal curve, and has a range of -2 to 4. 
+
+It is surprising to me that these are nearly the exact same plot! They both have centers around 1 and have the same range. They are also both close approximations of the normal curve. This is surprising because we are mapping random values between 0 and 1 to normal and chi-squared values. Based on graphs of these two distributions (normal versus chi-squared), we can see that they are not very similar. So I am surprised that they have such similar plots of $\beta_{1}$.
+
+### Question 2. 
+
+The theoretical stand errors of $\beta_{1} = \sqrt{\sigma^2 * (1/\sum(x_i - \hat{x})^2)}$ = 0.6979592 for the normal distribution and 0.6842273 for the Chi-Squared distribution.
+
+We can now look at the histogram of the 10,000 estimated standard errors for the normal distribution and see that it is centered on .67 with a range between 0.5 and 0.9. It is a bell curve and looks close to normally distributed. 
+
+```{r, echo = FALSE}
+ggplot() +
+  geom_histogram(data = normaldata, aes(x = sex)) + 
+  labs(title = "Histogram of Estimated Normal SE of Slope")
+
+ggplot() +
+  geom_histogram(data = chidata, aes(x = sex)) + 
+  labs(title = "Histogram of Estimated Chi-Squared SE of Slope")
+```
+
+For the histogram of the 10,000 Chi-Squared SE's of the $\beta_1$ we can see that it is slightly right skewed, which makes sense since the Chi-Squared distribution is heavily right skewed. We can see that the mode is around .6 and has a range of 0.40 - 1.25.  
+
+It does make sense that each of our histograms are centered on the theoretical standard error for each distribution. 
+
+### Question 3. 
+
+We know that the true mean for our normal distribution is 0, so to find the coverage probability of 95% confident intervals we check the proportion of the intervals that include our true mean of 0. We get a coverage probability of 0.9495. 
+
+Doing the same for the Chi-Squared distribution we know the true mean has been adjusted to 0. So we find the coverage probability of 95% confidence intervals to be .9463. What we can see is that the coverage probabilities are extremely close to each other. We also see that they are slightly lower than our true confidence interval of 95%. 
+
+## Paragraph
+The Chi-squared distribution is $very$ different than the normal distribution; however, when we performed analysis on it in comparison to the normal distribution we did not see drastic differences in performance. We saw that the histograms for the estimated slopes and the histograms for the estimated standard error of the slope were pretty similar. We also did not notice any distinct changes in the coverage probabilities for confidence intervals. This is significant because normality is one of our assumptions for linear regression. But in practice, distributions are almost never perfectly normal. So our findings imply that the assumption of normality is not as necessary as we may have thought if we are performing confidence intervals or hypothesis tests on linear models. 
+
+# Apendix 
+## Part 1
+### Question 1 
+```{r warning = FALSE, error = FALSE, message = FALSE}
+library(tidyverse)
+library(ggplot2)
+# Make results reproducible
+set.seed(5571)
+
+#dataset
+datasetyy <-data.frame(pvalue = NA)
+
+## Example code to simulate control group. 
+## This gives us the number in the control group who purchase the product
+##   out of 10,000 when truep = 0.02
+#first group
+for (x in 1:1000) {
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.025)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+
+#We get 674 are less than 0! yay! 
+```
+
+### Question 2
+```{r}
+#dataset
+datasetyy <-data.frame(pvalue = NA)
+
+#first group
+for (x in 1:1000) {
+num_gp1 <- rbinom(1, 15000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 15000, 0.025)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+#count of 822! 
+
+#second situation!!!
+
+datasetyy <-data.frame(pvalue = NA)
+
+#first group
+for (x in 1:1000) {
+num_gp1 <- rbinom(1, 11000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.025)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+
+#get a count of 302
+
+#final situation!!
+
+datasetyy <-data.frame(pvalue = NA)
+
+#first group
+for (x in 1:1000) {
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 11000, 0.025)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+
+#get a count of 934
+```
+
+### Question 3
+
+```{r}
+#blank dataset
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.015)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+
+#get a count of 766 
+#now adding that to our power df <3
+powerdf <- data.frame(pop_prop = 1.5, power = .766)
+
+#now repeating for a ton of true pop proportions! 
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.018)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+# we get 179 which is crazy different?
+
+#adding it to the powerdf
+powerdf[nrow(powerdf) + 1,] = c(1.8, .179)
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.02)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+# we get 179 which is crazy different?
+
+#adding it to the powerdf
+powerdf[nrow(powerdf) + 1,] = c(2.0, .061)
+
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.023)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+
+powerdf[nrow(powerdf) + 1,] = c(2.3, .307)
+
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.026)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+
+powerdf[nrow(powerdf) + 1,] = c(2.6, .816)
+
+
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.028)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+
+powerdf[nrow(powerdf) + 1 ,] = c(2.8, .969)
+
+datasetyy <-data.frame(pvalue = NA)
+
+for (x in 1:1000) {
+#first group
+num_gp1 <- rbinom(1, 10000, 0.02)
+#second group
+num_gp2 <- rbinom(1, 10000, 0.03)
+#two proportion z - test 
+test = prop.test(x = c(num_gp1, num_gp2), n = c(10000, 10000), alternative = c("two.sided"), correct = FALSE)
+datasetyy[nrow(datasetyy) + 1,] = test$p.value
+}
+
+#negative ones will be the ones that had a value smaller than .05
+datasetyy2 <- datasetyy %>% 
+  mutate(yes = pvalue - .05) 
+
+#drop first row
+datasetyy2 <- data.frame(datasetyy2[-1,])
+
+datasetyy2 %>% 
+  count(yes < 0)
+
+powerdf[nrow(powerdf) + 1 ,] = c(3.0, .994)
+
+ggplot(data = powerdf) +
+  geom_point(aes(x = pop_prop, y = power)) + 
+  geom_line(aes(x = pop_prop, y = power, color = "red")) +
+  labs(title = "Plot of Power as a Function of the True Population Proportion of Treatment") +
+  theme_bw()
+```
+
+## Part 2 Normality
+### Question 1
+```{r echo = FALSE, warning = FALSE, error = FALSE, message = FALSE}
+set.seed(19)
+
+normaldata <- data.frame(intercept = NA, x = NA, seintercept = NA, sex = NA, cixlower = NA, cixupper = NA)
+chidata <- data.frame(intercept = NA, x = NA, seintercept = NA, sex = NA, cixlower = NA, cixupper = NA)
+
+for (x in 1:10000) {
+n = 100
+x <- seq(0, 1, length.out = n)
+y_norm <- x + rnorm(n, 0, sd=2) 
+y_chisq <- x + (rchisq(n, 2)-2)
+mod_norm <- lm(y_norm ~ x)
+mod_chisq <- lm(y_chisq ~ x)
+normaldata[nrow(normaldata) + 1,] = c(mod_norm$coefficients, coef(summary(mod_norm))[, "Std. Error"], confint(mod_norm, x, level = .95))
+chidata[nrow(chidata) + 1, ] = c(mod_chisq$coefficients, coef(summary(mod_chisq))[, "Std. Error"], confint(mod_chisq, x, level = .95))}
+
+#drop first for both
+normaldata <- data.frame(normaldata[-1,])
+chidata <- data.frame(chidata[-1,])
+
+#histograms
+ggplot() +
+  geom_histogram(data = normaldata, aes(x = x)) + 
+  labs(title = "Histogram of Normal Slopes")
+
+ggplot() +
+  geom_histogram(data = chidata, aes(x = x)) + 
+  labs(title = "Histogram of Chi-Squared Slopes")
+```
+
+### Question 2. 
+
+```{r}
+sd(chidata$x)
+sd(normaldata$x)
+
+ggplot() +
+  geom_histogram(data = normaldata, aes(x = sex)) + 
+  labs(title = "Histogram of Estimated Normal Slopes")
+
+ggplot() +
+  geom_histogram(data = chidata, aes(x = sex)) + 
+  labs(title = "Histogram of Estimated Chi-Squared Slopes")
+```
+
+### Question 3.
+```{r}
+chidataci <- chidata %>% 
+  mutate(include_0 = cixlower < 0 & cixupper > 0 )
+
+chidataci %>% 
+  count(include_0)
+
+normaldataci <- normaldata %>% 
+  mutate(include_0 = cixlower < 0 & cixupper > 0 )
+
+normaldataci %>% 
+  count(include_0)
+```
+
+

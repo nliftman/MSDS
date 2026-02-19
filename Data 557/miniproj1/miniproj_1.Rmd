@@ -1,0 +1,188 @@
+---
+title: "Mini Project 1"
+output: pdf_document
+author: "Naomi Liftman"
+date: "Jan 23, 2026"
+---
+
+# Part A
+## 1.
+The proportion of individuals that have health insurance in our dataset is 0.928539. 
+```{r warning = FALSE, error = FALSE, message = FALSE}
+#import tidy
+library(tidyverse)
+#download csv
+HealthInsurance <- read_csv("health_insurance.csv")
+#find the counts
+HealthInsurance %>% 
+  count(health)
+#calculate the proportion
+8173/(8173+ 629)
+```
+
+## 2a. 
+Our 95% confidence interval is (0.9229098 0.9337903). 
+```{r}
+#number of successses (ppl with insurance)
+x <- 8173 
+#sample size
+n <- 8802
+
+# Calculate the 95% confidence interval
+result_prop <- prop.test(x, n)
+
+# To extract only the confidence interval:
+result_prop$conf.int
+```
+
+## 2b.
+The standard error can be calculated using the sample proportion and the sample size. We get a standard error of 0.002745642.  
+
+```{r}
+#caculating the standard error
+sqrt(0.928539*(1-0.928539)/8802)
+```
+
+## 2c. 
+We are 95% confident that the true population parameter (the proportion of people who have health insurance in the US) falls in this range: (0.9229098 0.9337903). 
+
+## 3a. 
+We can set up a null and alternate hypothesis (with null hypothesis being $H_0$ and alternate being $H_a$):
+$H_0: p = .846$
+$H_a : p \neq .846$
+
+p = # of people with health insurance/$n$
+
+## 3b.
+We are going to use a hypothesis test for proportions with the probability distribution being N(p, $\sqrt{(p*q)/n)}$. 
+
+## 3c.
+The test statistic is a z-score and can be found by calculating: $(\hat{p}- p) /\sqrt{(pq/n)}$. We get a z-score of -21.45381.
+```{r}
+(.846 - 0.928539)/sqrt(.846*(1-.846)/8802)
+```
+
+## 3d. 
+We get a p-value of < 2.2e-16, which is extremely small. 
+
+```{r}
+#it should be two-sided since we did not equal to 
+prop.test(x = 8173, n = 8802, p = .846, alternative = "two.sided", conf.level = .95, correct = FALSE)
+```
+
+## 3e. 
+We get a p-value of < 2.2e-16 which is smaller than our alpha level of 0.05. This tells us that we have statistically significant evidence at the alpha = 0.05 level to reject the null hypothesis. This means we have evidence to suggest that the proportion of individuals with health insurance changed from 1995 to 1996. 
+
+## 3f. 
+Our findings in the section two above stated that we were 95% confident that the true population proportion in 1996 fell inside the range of (0.9229686, 0.9337355). The population proportion of individuals with health insurance in 1995 was 0.846, which is outside of that confidence interval for 1996. Our findings in this section stated that the we had evidence to suggest that there were different proportions of individuals with health insurance in 1995 to 1996. Thus they are stating similar things. 
+
+# Part B
+What we found in Part A, was that we have evidence to suggest there were different proportions of individuals from 1995 to 1996. This is surprising for a few reasons. The first is that if we are sampling from the same population (adults in the United States) in different years we would not expect there to be such a large increase in proportion of people with insurance. Year to year it is understandable for rates to fluctuate; however, an 8 percent increase feels quite large (and proves to be statistically). 
+
+If we believe that our 1996 sample accurately captures the true population proportion of people with insurance then this increase in people covered could be due to legislation being passed to increase people with insurance. Any sweeping changes between the two years (such as legislation or expansion of coverage for certain groups) could lead to this large increase.  
+
+However, if we do not believe that the 1996 sample accurately captures the true population proportion then there may be other reasons for this drastic increase. One reason for this increase could be changes in how the data is collected. If the collection methods have drastically changed and were able to capture a more representative sample then a large increase would make sense. I found information about this on health care data reporting page which stated, "Beginning in 1996, MEPS continues this series with design enhancements and efficiencies that provide a more current data resource to capture the changing dynamics of the health care delivery and insurance system" (chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://meps.ahrq.gov/data_files/publications/rf18/rf18.pdf). This means that in 1996 we may have had a more accurate reporting of the data than in 1995 and thus the large jump in people with insurance reported. 
+
+
+# Part C
+## Methods
+
+I will be analyzing health insurance data collected by the Medical Expenditure Panel Survey in 1996. This data consists of 8,802 participants in the United States reporting over 11 variables; however, this analysis will focus on two variables. The first is $insurance$ which is a binary variable with "yes" and "no" responses determining if a respondent has health insurance and the second is $selfemp$ which is again binary with "yes" and "no" responses determining if they are self employed. 
+
+To understand the relationship between someones insurance status and if they are self employed or not, we will find point estimates of the proportion of people with insurance based on each level of employment. We will then construct Wald confidence intervals for the true population proportions because we do not have the population's standard deviation. We will also conduct a two-proportion z-test of the null hypothesis that there is no difference in proportions of insurance for people who are self employed and people who are not. 
+
+## Results
+
+To begin our analysis we found point estimates for the proportion of people with insurance in both groups (self employed and not self employed). $\hat{p}_{emp}$ = 0.9273057 is the point estimate for the proportion of people who have health insurance and are not self employed. $\hat{p}_{selfemp}$ = 0.9374416 is the point estimate for the proportion of people who have health insurance and are self employed.
+
+We then constructed two-sided Wald's confidence intervals for each of these point estimates. What we found is that we are 95% confident that the true population proportion of people with health insurance among those who are not self employed falls between (0.9215181, 0.9330932). We also found that we are 95% confident that the true population proportion of people with health insurance among those who are self employed falls between (0.9229383 0.951945). See table below for this information. 
+
+```{r echo = FALSE}
+library(gt)
+library(gtExtras)
+
+names <- NA
+param <- NA
+ci_low <- NA
+ci_high <- NA
+
+table <- data.frame(names, param, ci_low, ci_high)
+table[1, ] <- list("Self Employed", "0.9374416", "0.9229383", "0.951945")
+table[nrow(table) + 1, ] <- list("Not Self Employed", "0.9273057", "0.9215181", "0.9330932")
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    names = "",
+    param = "Point Estimate",
+    ci_low = "CI Lower Bound",
+    ci_high = "Upper Bound",
+    )  %>% 
+  gt_add_divider(columns = "names") 
+
+gt_table
+```
+
+
+Our final piece of understanding the relationship between these two groups is to conduct a two-proportion z-test. We have hypotheses as follows:
+
+$H_0: p_{emp} = p_{selfemp}$
+
+
+$H_a: p_{emp} \neq p_{selfemp}$
+
+We return a p-value of 0.2275. This means that we fail to reject the null hypothesis and do not have statistically significant evidence at the alpha = .05 level that there is a difference in the proportion of people with health insurance between those who are and are not self employed. 
+
+## Conclusion
+
+What we found was that we do not have statistically significant evidence at the alpha = 0.05 level of a difference in the proportion of people with health insurance based on their employment status. This is consistent with our confidence intervals since the one constructed for those who are self employed includes the sample proportion for those who are not self employed. In fact the confidence intervals predominantly overlap, which was our first clue that there may not be a difference.
+
+One implication of these findings is in peoples ideas about health insurance. Across the US a prevalent idea is that the only way to get health insurance is through your job; however, these findings dispel this notion. They show that there is no evidence of a difference in the proportion of those with health insurance based on your employment status (self employed or not), and thus it is not necessary to be employed by a company to gain health insurance. 
+
+## Appendix 
+```{r}
+#import the libary
+library(DescTools)
+
+#find the counts
+HealthInsurance %>% 
+  group_by(selfemp) %>% 
+  count(health)
+
+#not self employed
+7169/(7169 + 562)
+#self employed woot woot 
+1004/(1004 + 67)
+
+#not self employed
+BinomCI(7169, 7169 + 562, conf.level = 0.95, sides = c("two.sided"), method = c("wald"))
+#self employed
+BinomCI(1004, 1004 + 67, conf.level = 0.95, sides = c("two.sided"), method = c("wald"))
+
+#two sided t-test 
+prop.test(x = c(7169, 1004), n = c(7169 + 562, 1004 + 67), alternative = "two.sided", conf.level = .95, correct = FALSE)
+
+names <- NA
+param <- NA
+ci_low <- NA
+ci_high <- NA
+
+table <- data.frame(names, param, ci_low, ci_high)
+table[1, ] <- list("Self Employed", "0.9374416", "0.9229383", "0.951945")
+table[nrow(table) + 1, ] <- list("Not Self Employed", "0.9273057", "0.9215181", "0.9330932")
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    names = "",
+    param = "Point Estimate",
+    ci_low = "CI Lower Bound",
+    ci_high = "Upper Bound",
+    )  %>% 
+  gt_add_divider(columns = "names") 
+
+gt_table
+```
+
+
+

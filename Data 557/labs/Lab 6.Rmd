@@ -1,0 +1,95 @@
+---
+title: "Lab 6"
+author: "DATA 557"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Context
+
+In this lab, we'll revisit the FEV dataset that was first introduced in Lab 5. Context from that lab is provided below. 
+
+It is now widely believed that smoking tends to impair lung function. Much of the data to support this arises from studies of pulmonary function in adults who are long-time smokers. A question then arises whether such deleterious effects of smoking can be detected in children who smoke. To address this question, measures of lung function were made in 654 children seen for a routine check up in a particular pediatric clinic. The children participating in this study were asked whether they were current smokers.
+
+A common measurement of lung function is the forced expiratory volume (FEV), which measures how much air you can blow out of your lungs in a short period of time. A higher FEV is usually associated with better respiratory function. It is well known that prolonged smoking diminishes FEV in adults, and those adults with diminished FEV also tend to have decreased pulmonary function as measured by other clinical variables, such as blood oxygen and carbon dioxide levels.
+
+## Reading in the Data
+
+```{r, message=FALSE}
+library(tidyverse)
+fev <- read_csv("fev.csv")
+```
+
+The columns are:
+
+- `seqnbr`: case number (the numbers 1 to 654)
+- `subjid`: subject identification number (unique for each different child)
+- `age`: subject age at time of measurement (years)
+- `fev`: measured FEV (liters per second), a measure of lung capacity
+- `height`: subject height at time of measurement (inches)
+- `sex`: sex of the subject (`female` and `male`)
+- `smoke`: smoking habits (`nonsmoker` or `smoker`)
+
+
+**Question 1**: In Lab 5, you fit a linear regression model with `fev` as response and `smoke` as the predictor. Add age as a predictor variable to the model.
+
+```{r}
+library(tidyverse)
+model_w_age <- lm(fev ~ smoke + age, data = fev)
+model_w_age
+```
+  (a) What is the estimated coefficient on `age`? Interpret the estimated coefficient on `age`. 
+  
+The estimated coefficient on `age` is 0.2306. This means that our model predicts that for every year increase in age we estimate the fev to increase by 0.2306 when holding the smoker category constant. 
+
+  (b) What is the estimated coefficient on `smoke`? Interpret the estimated coefficient on `smoke`.
+  
+The estimated coefficient on `smoke` is -0.2090. This tells us that our model predicts that smokers decrease the fev by 0.2090 when holding the age the same. 
+  
+  (c) Comment on the differences between your interpretation for the coefficient on `smoke` in this model and your interpretation from Question 1 of Lab 5? 
+  
+This makes so much more sense than lab 5! In lab 5 we found that being a smoker increases your fev (which just does not logically make sense), so this makes far more sense. 
+
+**Question 2**: Now add an interaction between age and smoking into the model. In this question we will investigate evidence that smoking modifies the relationship between age and FEV. 
+
+```{r}
+fev_inter_model <- lm(fev ~ smoke + age + smoke*age, data = fev)
+summary(fev_inter_model)
+```
+
+  (a) What is the null hypothesis? 
+
+The null hypothesis is that beta_{3} = 0. 
+  
+  (b) What test will you use? 
+
+We will use a t-test. 
+
+  (c) What is the test statistic and what is the distribution under the null hypothesis? 
+
+The test statistic is a t-test and the distribution under the null is t-distribution. (The test statstic in this situation is -5.293).
+
+  (d) What do you conclude?
+
+We get a p-value that is below alpha = .05. This tells us that we have statistically significant evidence to reject the null hypothesis (beta_{3} = 0). So we have evidence to suggest that there is an interaction between age and smoker status.  
+
+**Question 3**: Using the model from Question 2, provide a point estimate and 95% confidence interval for the coefficient on `age` for 
+
+```{r}
+confint(fev_inter_model, level = .95)
+```
+
+  (a) children who smoke, and
+
+We find a confidence interval for children who smoke is: (1.13007302, 2.7570685).
+
+  (b) for children who do not smoke.
+  
+She told us that we could not do this due to the limitations in R and to simply submit the lab :)
+
+Thank you lovely grader <3
+  
+*Hint: If working in `R`, you might use the function `predict(..., interval = "confidence")`.*

@@ -1,0 +1,151 @@
+---
+title: "Descriptive Statistics"
+author: "Naomi Liftman"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(rio)
+#load in the data
+education <- import("salary.txt")
+
+#graph for highest degree year 
+ggplot(data = education) +
+  geom_histogram(aes(x = yrdeg)) +
+  labs(title = "Histogram of the Year Faculty Achieved Their Highest Degree") +
+  xlab("Year Achieved Highest Degree") +
+  ylab("Count") +
+  theme_minimal()
+
+#differentiate between sex
+ggplot(data = education) +
+  geom_histogram(aes(x = yrdeg, fill = sex)) +
+  labs(title = "Histogram of the Year Faculty Achieved Their Highest Degree by Sex") +
+  xlab("Year Achieved Highest Degree") +
+  ylab("Count") +
+  scale_fill_manual(labels = c("Female", "Male"), values = c("pink", "lightblue"), name = "Sex") +
+  facet_wrap(vars(sex)) +
+  theme_minimal()
+
+
+```
+
+```{r}
+#descriptive statistics 
+library(DescTools)
+#year achieved highest degree 
+summary(education$yrdeg)
+education %>% 
+  summarise(mean = (mean(yrdeg)), sd = sd(yrdeg), min = min(yrdeg), max = max(yrdeg), mode = Mode(yrdeg))
+
+#this is non-numeric 
+#so will need to do some other things
+#academic field
+education %>% 
+  group_by(field) %>% 
+  count(field)
+
+#start year
+education %>% 
+  summarise(mean = (mean(startyr)), sd = sd(startyr), min = min(startyr), max = max(startyr), mode = Mode(startyr))
+
+#academic rank
+#also non-numeric
+education %>% 
+  group_by(year = 95) %>% 
+  count(rank)
+
+#monthly salary
+education %>% 
+  group_by(year = 95) %>% 
+  summarise(mean = (mean(salary)), sd = sd(salary), min = min(salary), max = max(salary), mode = Mode(salary))
+```
+
+```{r}
+#using gt 
+library(gt)
+library(gtExtras)
+
+type <- NA
+min <- NA
+max <- NA
+average <- NA
+sd <- NA
+mode <- NA
+
+table <- data.frame(type, min, max, average, sd, mode)
+table[1, ] <- list("Year Achieved Highest Degree", "48", "96", "72.11", "8.50", "72")
+table[nrow(table) + 1, ] <- list("Start Year", "48", "95", "76.07", "8.95", "72")
+table[nrow(table) + 1, ] <- list("Monthly Salary in 1995", "1200", "14464", "4721.82", "1986.71", "5631")
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+   cols_move(
+    columns = mode,
+    after = max) %>%
+  cols_label(
+    type = "",
+    min = "Minimum",
+    max = "Maximum",
+    average = "Mean",
+    sd = "SD",
+    mode = "Mode"
+    )  %>% 
+  gt_add_divider(columns = "type")
+
+gt_table
+```
+
+```{r}
+#using gt 
+library(gt)
+library(gtExtras)
+
+name <- NA
+count <- NA
+
+table <- data.frame(name, count)
+table[1, ] <- list("Arts", "2840")
+table[nrow(table) + 1, ] <- list("Other", "13143")
+table[nrow(table) + 1, ] <- list("Professonal", "3809")
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    name = "",
+    count = "Count"
+  ) %>% 
+  tab_header(title = "Number of Professors in Each Academic Field")
+gt_table
+```
+
+```{r}
+#using gt 
+library(gt)
+library(gtExtras)
+
+names <- NA
+count <- NA
+
+table <- data.frame(names, count)
+table[1, ] <- list("Assistant", "4048")
+table[nrow(table) + 1, ] <- list("Associate", "6529")
+table[nrow(table) + 1, ] <- list("Full Professor", "9211")
+table[nrow(table) + 1, ] <- list("NA", "4")
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    names = "",
+    count = "Count"
+  ) %>% 
+  tab_header(title = "Number of Professors in Each Academic Rank")
+gt_table
+```
+
+
+
+
+

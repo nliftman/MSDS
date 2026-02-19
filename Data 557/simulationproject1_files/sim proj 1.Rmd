@@ -1,0 +1,322 @@
+---
+title: "Code"
+author: Naomi Liftman
+output: pdf_document
+---
+1a. 
+```{r warning = FALSE, error = FALSE, message = FALSE}
+#load in the many libraries 
+library(ggplot2)
+library(dplyr)
+library(matrixStats)
+library(gt)
+library(gtExtras)
+# Make results reproducible
+set.seed(5771)
+```
+
+```{r}
+#NOTE: I just reused this for every sample size and changed the title in the ggplot 
+
+# Define sample size
+n <- 5 # you'll also try 10, 30, 100, and 500
+# Simulate datasets from different populations with the same mean and standard deviation
+mu <- 10
+sigma <- 10
+# Population 1: normal
+#getting the data
+normal_data <- replicate(1000, rnorm(n, mean = mu, sd = sigma))
+
+#taking the means and turning into a df
+normal_means <- data.frame(colMeans(normal_data))
+#changing the name of the column
+colnames(normal_means)[1] <- "means" 
+#finding the sd of 
+sd <- colSds(normal_data)
+#adding the sd to our means df
+normal_means <- normal_means %>% 
+  cbind(colSds(normal_data))
+#rename the column
+colnames(normal_means)[2] <- "sd" 
+
+#graphing
+ggplot(data = normal_means) + geom_histogram(aes(x = means)) +
+  labs(title = "Histogram of Means for 1000 Samples: Size 5") 
+```
+
+1b. 
+```{r}
+n <- 5 # you'll also try 10, 30, 100, and 500
+# Simulate datasets from different populations with the same mean and standard deviation
+mu <- 10
+sigma <- 10
+# Population 1: normal
+#getting the data
+normal_data <- replicate(1000, rnorm(n, mean = mu, sd = sigma))
+
+#taking the means and turning into a df
+normal_means <- data.frame(colMeans(normal_data))
+#changing the name of the column
+colnames(normal_means)[1] <- "means" 
+#finding the sd of 
+sd <- colSds(normal_data)
+#adding the sd to our means df
+normal_means <- normal_means %>% 
+  cbind(colSds(normal_data))
+#rename the column
+colnames(normal_means)[2] <- "sd" 
+
+#calculating the t statistic with the pop sd
+normal_means <- normal_means %>%
+  mutate(stat_pop = ((means - 10)/(10/sqrt(n))))
+
+#graph
+ggplot(data = normal_means) + geom_histogram(aes(x = stat_pop)) +
+  labs(title = "Histogram of t-Statistic for 1000 Samples: Size 30") 
+```
+
+1c. 
+```{r}
+n <- 500 # you'll also try 10, 30, 100, and 500
+# Simulate datasets from different populations with the same mean and standard deviation
+mu <- 10
+sigma <- 10
+# Population 1: normal
+#getting the data
+normal_data <- replicate(1000, rnorm(n, mean = mu, sd = sigma))
+
+#taking the means and turning into a df
+normal_means <- data.frame(colMeans(normal_data))
+#changing the name of the column
+colnames(normal_means)[1] <- "means" 
+#finding the sd of 
+sd <- colSds(normal_data)
+#adding the sd to our means df
+normal_means <- normal_means %>% 
+  cbind(colSds(normal_data))
+#rename the column
+colnames(normal_means)[2] <- "sd" 
+
+#calculating the t statistic with the pop sd
+normal_means <- normal_means %>%
+  mutate(stat_stat = ((means - sd)/(10/sqrt(n))))
+
+#graph
+ggplot(data = normal_means) + geom_histogram(aes(x = stat_stat)) +
+  labs(title = "Histogram of t-Statistic for 1000 Samples: Size 500") 
+```
+
+d. 
+```{r}
+n <- 500 # you'll also try 10, 30, 100, and 500
+# Simulate datasets from different populations with the same mean and standard deviation
+mu <- 10
+sigma <- 10
+# Population 1: normal
+#getting the data
+normal_data <- replicate(1000, rnorm(n, mean = mu, sd = sigma))
+
+#taking the means and turning into a df
+normal_means <- data.frame(colMeans(normal_data))
+#changing the name of the column
+colnames(normal_means)[1] <- "means" 
+#finding the sd of 
+sd <- colSds(normal_data)
+#adding the sd to our means df
+normal_means <- normal_means %>% 
+  cbind(colSds(normal_data))
+#rename the column
+colnames(normal_means)[2] <- "sd" 
+
+#graph
+ggplot(data = normal_means) + geom_histogram(aes(x = sd)) +
+  labs(title = "Histogram of SD for 1000 Samples: Size 500") 
+```
+e.
+```{r}
+#NOTE:ran this iteratively for all the sample sizes and then used both the 
+#pop sd and the sample sd 
+
+n <- 500 # you'll also try 10, 30, 100, and 500
+# Simulate datasets from different populations with the same mean and standard deviation
+mu <- 10
+sigma <- 10
+# Population 1: normal
+#getting the data
+normal_data <- replicate(1000, rnorm(n, mean = mu, sd = sigma))
+
+#taking the means and turning into a df
+normal_means <- data.frame(colMeans(normal_data))
+#changing the name of the column
+colnames(normal_means)[1] <- "means" 
+#finding the sd of 
+sd <- colSds(normal_data)
+#adding the sd to our means df
+normal_means <- normal_means %>% 
+  cbind(colSds(normal_data))
+#rename the column
+colnames(normal_means)[2] <- "sd" 
+
+#calculating the t statistic with the pop sd
+normal_means <- normal_means %>%
+  mutate(stat_pop = ((means - sd)/(10/sqrt(n))))
+#check if our test statistic is farther that 1.96 away! 
+passes_popsd <- normal_means %>% 
+  #take abs bc it has to be 1.96 away in either direction
+  mutate(teststatistic = abs(stat_pop))
+#count how many are greater than 1.96
+nrow(passes_popsd[passes_popsd$teststatistic>1.648, ])
+```
+
+1e. 
+```{r}
+#pretty table time LETS GOOOO
+names <- NA
+n_5 <- NA
+n_10 <- NA
+n_30 <- NA
+n_100 <- NA
+n_500 <- NA
+
+table <- data.frame(names, n_5, n_10, n_30, n_100, n_500)
+table[1, ] <- list("Populatin SD", "56", "40", "42", "43", "52")
+table[nrow(table) + 1, ] <- list("Sample SD", "114", "113", "115", "112", "113")
+table[nrow(table) + 1, ] <- list("t-distribution and Sample SD",  "93", "153", "184", "176", "174")
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    names = "Sample Size:",
+    n_5 = "5",
+    n_10 = "10",
+    n_30 = "30",
+    n_100 = "100",
+    n_500 = "500"
+    )  %>% 
+  gt_add_divider(columns = "names") 
+
+gt_table
+
+names <- NA
+n_5 <- NA
+n_10 <- NA
+n_30 <- NA
+n_100 <- NA
+n_500 <- NA
+
+table <- data.frame(names, n_5, n_10, n_30, n_100, n_500)
+table[1, ] <- list("df", "4", "9", "29", "99", "499")
+table[nrow(table) + 1, ] <- list("Critical Value", "2.132", "1.833", "1.699", "1.660", "1.648")
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    names = "Sample Size:",
+    n_5 = "5",
+    n_10 = "10",
+    n_30 = "30",
+    n_100 = "100",
+    n_500 = "500"
+    )  %>% 
+  gt_add_divider(columns = "names") 
+
+gt_table
+```
+
+Part 2
+```{r}
+# Define sample size
+n <- 10 # you'll only try 10, 30, and 500
+# Simulate datasets from different populations with the same mean and standard deviation
+mu <- 10
+sigma <- 10
+# Population 2: gamma
+gamma_data <- replicate(1000, rgamma(n, shape = mu^2/sigma^2, scale = sigma^2/mu))
+#taking the means and turning into a df
+gammadata <- data.frame(colMeans(gamma_data))
+#changing the name of the column
+colnames(gammadata)[1] <- "means" 
+#finding the sd of 
+sd <- colSds(gamma_data)
+#adding the sd to our means df
+gammadata <- gammadata %>% 
+  cbind(colSds(gamma_data))
+#rename the column
+colnames(gammadata)[2] <- "sd" 
+gammadata <- gammadata %>%
+  mutate(stat_pop = ((means - 10)/(10/sqrt(n))))
+#graph
+ggplot(data = gammadata) + geom_histogram(aes(x = stat_pop)) +
+  labs(title = "Gamma Distribution Test Statistic: Sample Size 500") 
+
+passes_popsd <- gammadata %>% 
+  #take abs bc it has to be 1.96 away in either direction
+  mutate(teststatistic = abs(stat_pop))
+#count how many are greater than 1.96
+nrow(passes_popsd[passes_popsd$teststatistic>1.833, ])
+```
+
+
+
+```{r}
+# Population 3: using the uniform, but we need them to have the same mu and sigma
+
+n <- 10 # you'll only try 10, 30, and 500
+# Simulate datasets from different populations with the same mean and standard deviation
+mu <- 10
+sigma <- 10
+# Population 2: gamma
+#so i calculated the needed min and max to get 10 and 10 
+data3 <- replicate(1000, runif(n, min= -7.32, max =27.32))
+#taking the means and turning into a df
+uniformdata <- data.frame(colMeans(data3))
+#changing the name of the column
+colnames(uniformdata)[1] <- "means" 
+#finding the sd of 
+sd <- colSds(data3)
+#adding the sd to our means df
+uniformdata <- uniformdata %>% 
+  cbind(colSds(data3))
+#rename the column
+colnames(uniformdata)[2] <- "sd" 
+uniformdata <- uniformdata %>%
+  mutate(stat_pop = ((means - 10)/(10/sqrt(n))))
+#graph
+ggplot(data = uniformdata) + geom_histogram(aes(x = stat_pop)) +
+  labs(title = "Uniform Distribution Test Statistic: Sample Size 10") 
+
+passes_popsd <- uniformdata %>% 
+  #take abs bc it has to be 1.96 away in either direction
+  mutate(teststatistic = abs(stat_pop))
+#count how many are greater than 1.96
+nrow(passes_popsd[passes_popsd$teststatistic>1.648, ])
+```
+
+```{r}
+#pretty table time LETS GOOOO
+names <- NA
+n_10 <- NA
+n_30 <- NA
+n_500 <- NA
+
+table <- data.frame(names, n_10, n_30, n_500)
+table[1, ] <- list("Normal Distribution", "153", "184", "174")
+table[nrow(table) + 1, ] <- list("Gamma Distribution", "66", "74", "118")
+table[nrow(table) + 1, ] <- list("Uniform Distribution",  "70", "77", "104")
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    names = "Sample Size:",
+    n_10 = "10",
+    n_30 = "30",
+    n_500 = "500"
+    )  %>% 
+  gt_add_divider(columns = "names") 
+
+gt_table
+```
+
+
+
+

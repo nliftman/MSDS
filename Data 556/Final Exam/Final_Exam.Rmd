@@ -1,0 +1,275 @@
+---
+title: "Final Exam"
+author: "Naomi Liftman"
+date: "December 3, 2025"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+## Problem 1
+
+#### Fit appropriate regression models for fatigue (SSC-F) given weakness (SSC-W) and treatment group (IC). Select the regression model that is best supported by the data using the likelihood ratio test, AIC and BIC. Please justify your answers in writing and with code.
+
+We want to find a model that fits our data the best. In total we will fit 5 models, starting with a model of fatigue only. We can then fit a model of fatigue given weakness and a model of fatigue given treatment group. We can then fit two models for fatigue given weakness and treatment, one where it is weakness plus treatment and one where it is the interaction of weakness and treatment. For each of these models we will then find the AIC and BIC scores. All of this can be found below in table 1.
+
+![](/Users/naomiliftman/Desktop/MSDS/Data%20556/Final%20Exam/Table1.png)
+
+What we can see from table 1 is that based on AIC and BIC scores model 4 fits our data the best since we are looking for the smallest AIC and BIC scores. However, we can see that model 4 is not the only model with lower scores. Both model 2 and 5 have similar BIC and AIC scores as to model 4. Thus we want to use a likelihood ratio test to compare these three of these models. When we compare model 2 to model 4 we see that we have a p-value of 0.03415. What this means is that model 4 is significantly more accurate than model two at the $\alpha = .05$ level. Thus we want to discard model 2. We can perform the same tests for model 5 versus model 4 which returns a p-value of 0.3425. This means that we do not have evidence to suggest that model model 4 is significantly more accurate than model 5. Since we have found that model 4 and 5 fit the data similarly, we must decide which model is better. As a rule of thumb, we often choose a model that is simpler. The reason for this is that simpler models are less likely to capture high variance, are easier to generalize to new datasets, and are easier to interpret coefficients for. Since the non-interaction model (model 4) is less complicated we are inclined to use this model.
+
+We have used AIC, BIC, and likelihood ratio tests to show that Model 4 is the best model we can fit to represent our data. This model is $Fatigue = Weakness + Treatement Group$.
+
+## Problem 2
+
+#### Fit appropriate regression models for weakness (SSC-W) given fatigue (SSC-F) and treatment group (IC). Select the regression model that is best supported by the data using the likelihood ratio test, AIC and BIC. Please justify your answers in writing and with code.
+
+To fit an appropriate regression model for weakness, we will follow the same steps as problem 1. Our first model will be only weakness, then we will have models for weakness given fatigue, weakness given treatment group, and then the two models with both fatigue and treatment group. To see each model and their AIC and BIC scores see table 2 below.
+
+![](/Users/naomiliftman/Desktop/MSDS/Data%20556/Final%20Exam/Table2.png)
+
+We can see that once again our best model based on AIC and BIC scores is the fourth model. We can also see that model 2 and 5 have similar AIC and BIC scores. Thus we will again return to the likelihood ratio tests. When we test model 2 against model 4 we get a p-value of 0.006746. This is smaller than our $\alpha = .05$ so we will reject the null hypothesis that these models fit the data equally well and we will find that model 4 is significantly more accurate. When we perform the ratio test between model 4 and 5 we find that our p-value is 0.3425. This is larger than our p-value and so we will fail to reject the null hypothesis. Thus we do not have evidence to suggest that model 4 is more accurate than model 5. However, since model 4 is less complicated than model 5 and has a better AIC and BIC we will use that model.
+
+We have used AIC, BIC, and likelihood ratio tests to show that Model 4 is the best model we can fit to represent our data. This model is $Weakness = Fatigue + Treatement Group$.
+
+## Problem 3
+
+#### Fit loglinear models for weakness (SSC-W), fatigue (SSC-F) and treatment group (IC). Select the loglinear model that is best supported by the data using $G^2$. Please justify your answers in writing and with code.
+
+In total we will look at eight models. The first is the fully saturated log-linear regression model. We fit this saturated model and then perform a chi-squared test based on $G^2$. What we find here is that the p-value is zero, which means that we reject the null hypothesis and conclude this model does not fit our data well. We can then look at the three models (labeled models 2-4) which are a single variable independent of the other two variables. Again we find no p-values above our $\alpha = 0.01$ threshold and conclude that these models do not fit our data well. We then fit the three models with a conditional on a variable and find that out of these three models, models 5 and 6 have a chi-squared p-value of above 0.01. Thus we fail to reject the null hypothesis and conclude that models 5 and 6 fit our data well. We can then fit the final model which is our model stating there are no three factor interactions. This model also has a p-value of above our $\alpha = 0.01$ and thus we fail to reject the null hypothesis and find this model fits the data well. All of this can be seen below in table 3.
+
+![](/Users/naomiliftman/Desktop/MSDS/Data%20556/Final%20Exam/Table3.png)
+
+While we are thankful that at least one of the models fits the data well, we now have three viable models and must determine a model that fits the data best. For this we can perform a nested likelihood ratio test to compare models. We start by going from the most complex to the least complex model, so we will compare models 6 and 8. The p-value returned from performing the nested likelihood ratio test on models 6 and 8 is 0.006745816, which tells us that we prefer model 8 and eliminate model 6. We then do the same test with models 8 and 5 and return a p-value of 0.03414934. This means that we prefer model 5 and eliminate model 8.
+
+Thus through the use of chi-squared tests based on $G^2$ and nested likelihood ratio tests we have determined that model 5 fits the data the best and states that fatigue is independent of intervention group given weakness.
+
+## Problem 4
+
+#### Summarize your findings in the statistical analyses you perform in the first three problems. Is weakness related to fatigue? If so, in which way? Is the intervention effective in altering the levels of weakness or fatigue? Are the findings from your regression models consistent with those from your loglinear models?
+
+Our findings throughout the questions make sense. What we found in part 1 is that we can accurately predict fatigue based on weakness and the intervention group. What we found in part 2 is that we can accurately predict weakness based on fatigue and intervention group. What these two parts showed is that there is clearly a non-independent relationship between fatigue and weakness when holding the intervention group constant.
+
+This is consistent with our findings from our log-linear models. What we found in problem 3 was that both models five and six explain one of the symptoms using the intervention group and given the other symptom. This is similar with what we found in problems 1 and 2 since they both showed that one of the symptoms give us information about the other.
+
+To understand the effect of the intervention group we can return to the models from problems 1 and 2 to see the coefficients. Based on our chosen model from problem 1 we know that when holding all else constant, being a part of the intervention group decreased the log-odds of fatigue being reported as a 1 (by .29) and reported as a 2 (by .36). However, we see that being in the intervention group, when holding all else constant, increased the log-odds of reporting a fatigue of 3 minimally (by 0.096). This means that we have evidence to suggest that the intervention assisted in decreasing mild fatigue (reports of a 1 or 2), but was not effective in decreasing the most intense fatigue (reporting a 1). All of this can be seen in Figure 1 below.
+
+![Figure 1](/Users/naomiliftman/Desktop/MSDS/Data%20556/Final%20Exam/Figure1.png)
+
+Based on our chosen model from problem 2, we can see that while holding all else constant, being a part of the intervention group decreases the log-odds likelihood of reporting a 1, 2, and 3 level weakness by 0.22, 0.289, and 0.76 respectively. What this tells us, since this model was deemed to be a good fit of the data is that we have statistically significant evidence to suggest that the intervention deceased weakness in patients. See figure 2 below for more information.
+
+![Figure 2](/Users/naomiliftman/Desktop/MSDS/Data%20556/Final%20Exam/Figure2.png)
+
+These findings make sense logically as we discussed in class. The average person may correlate the concepts of fatigue and weakness, making them non-independent (which our models showed).
+
+## Code Used
+
+#### Problem 1
+
+```{r warning = FALSE, error = FALSE, message = FALSE}
+#libraries 
+library(nnet)
+library(lmtest)
+library(AICcmodavg)
+library(tidyverse)
+library(gtExtras)
+#load in the data
+data = read.csv("joachim-ic.csv") 
+#create a three way table
+mytable <- xtabs(~ ssc2 + ssc4 + ic, data = data) 
+#check that the table works for IC 0 and IC 1 
+mytable
+#IMPORTANT!!!!
+#SSC4 = Fatigue
+#SSC2 = Weakness
+```
+
+```{r}
+#making the data work for regression models
+X = as.factor(data[,"ssc2"]) # weakness
+Y = as.factor(data[,"ssc4"]) # fatigue 
+time = as.factor(data[,"time"]) #dont care
+ic = data[,"ic"] #intervention
+
+#fitting all the models
+M1 = multinom(Y ~ 1)
+AIC(M1)
+BIC(M1)
+M2 = multinom(Y ~ X)
+AIC(M2)
+BIC(M2)
+M3 = multinom(Y ~ ic)
+AIC(M3)
+BIC(M3)
+M4 = multinom(Y ~ X + ic)
+AIC(M4)
+BIC(M4)
+summary(M4)
+M5 = multinom(Y ~ X*ic)
+AIC(M5)
+BIC(M5)
+#dont need to look at any of the ones with time since we were told to ignore it 
+#lr test! 
+lrtest(M2, M4)
+lrtest(M4, M5)
+```
+
+```{r}
+# create df
+model <- NA
+model_name <- NA
+aic <- NA
+bic <- NA
+
+table1 <- data.frame(model, model_name, aic, bic)
+
+table1[1, ] <- list("1)", "Fatigue ~ 1", "3590.826", "3606.434")
+table1[nrow(table1) + 1, ] <- list("2)", "Fatigue ~ Weakness", "2800.887", "2863.318")
+table1[nrow(table1) + 1, ] <- list("3)", "Fatigue ~ Intervention Group", "3580.742", "3611.958")
+table1[nrow(table1) + 1, ] <- list("4)", "Fatigue ~ Weakness + Intervention Group", "2798.225", "2876.265")
+table1[nrow(table1) + 1, ] <- list("5)", "Fatigue ~ Weakness * Intervention Group", "2806.126", "2930.990")
+
+table1_pretty <- table1 %>% 
+  gt() %>% 
+  tab_header(title = "Fatigue Regression Models") %>% 
+  cols_label(model = "Model", model_name = "", aic = "AIC", bic = "BIC") %>% 
+  gt_add_divider(columns = "model_name") %>% 
+  gt_add_divider(columns = "aic") %>% 
+  cols_align(align = c("left"), columns = c(aic, bic)) %>% 
+  gt_highlight_rows(
+    columns = everything(),
+    rows = c(4), 
+    font_weight = "normal")  %>%
+  tab_footnote(footnote = "Table 1: The five regression models fit for the fatigue variable. The model with the smallest AIC and BIC is highlighted.")
+```
+
+#### Problem 2
+
+```{r}
+M1 = multinom(X ~ 1)
+AIC(M1)
+BIC(M1)
+M2 = multinom(X ~ Y)
+AIC(M2)
+BIC(M2)
+M3 = multinom(X ~ ic)
+AIC(M3)
+BIC(M3)
+M4 = multinom(X ~ Y + ic)
+AIC(M4)
+BIC(M4)
+M4
+M5 = multinom(X ~ Y*ic)
+AIC(M5)
+BIC(M5)
+#dont need to look at any of the ones with time since we were told to ignore it 
+#lr test! 
+```
+
+```{r}
+# create df
+model <- NA
+model_name <- NA
+aic <- NA
+bic <- NA
+
+table1 <- data.frame(model, model_name, aic, bic)
+
+table1[1, ] <- list("1)", "Weakness ~ 1", "3503.248", "3518.856")
+table1[nrow(table1) + 1, ] <- list("2)", "Weakness ~ Fatigue", "2713.309", "2775.741")
+table1[nrow(table1) + 1, ] <- list("3)", "Weakness ~ Intervention Group", "3489.631", "3520.847")
+table1[nrow(table1) + 1, ] <- list("4)", "Weakness ~ Fatigue + Intervention Group", "2707.114", "2785.154")
+table1[nrow(table1) + 1, ] <- list("5)", "Weakness ~ Fatigue * Intervention Group", "2715.015", "2839.879")
+
+table1_pretty <- table1 %>% 
+  gt() %>% 
+  tab_header(title = "Weakness Regression Models") %>% 
+  cols_label(model = "Model", model_name = "",aic = "AIC", bic = "BIC") %>% 
+  gt_add_divider(columns = "model_name") %>% 
+  gt_add_divider(columns = "aic") %>% 
+  cols_align(align = c("left"), columns = c(aic, bic)) %>% 
+  gt_highlight_rows(
+    columns = everything(),
+    rows = c(4), 
+    font_weight = "normal")  %>%
+  tab_footnote(footnote = "Table 2: The five regression models fit for the weakness variable. The model with the smallest AIC and BIC is highlighted.")
+```
+
+```{r}
+lrtest(M2, M4)
+lrtest(M4, M5)
+```
+
+#### Problem 3
+
+```{r}
+#Model 1
+indep.loglin = loglin(mytable,margin=list(1,2,3),fit=TRUE,param=TRUE)
+1-pchisq(indep.loglin$lrt,indep.loglin$df)
+#does not fit the data well
+#Model 2
+X1indepX2X3.loglin = loglin(mytable,margin=list(1,c(2,3)),fit=TRUE,param=TRUE)
+1-pchisq(X1indepX2X3.loglin$lrt,X1indepX2X3.loglin$df)
+#does not fit the data well
+#Model 3
+X2indepX1X3.loglin = loglin(mytable,margin=list(2,c(1,3)),fit=TRUE,param=TRUE)
+1-pchisq(X2indepX1X3.loglin$lrt,X2indepX1X3.loglin$df)
+#does not fit the data well
+#Model 4
+X3indepX1X2.loglin = loglin(mytable,margin=list(3,c(1,2)),fit=TRUE,param=TRUE)
+1-pchisq(X3indepX1X2.loglin$lrt,X3indepX1X2.loglin$df)
+#does not fit the data well
+#Model 5
+X2indepX3givenX1.loglin = loglin(mytable,margin=list(c(1,2),c(1,3)),fit=TRUE,param=TRUE)
+1-pchisq(X2indepX3givenX1.loglin$lrt,X2indepX3givenX1.loglin$df)
+#THIS MODEL FITS THE DATA WELL
+#Model 6
+X1indepX3givenX2.loglin = loglin(mytable,margin=list(c(1,2),c(2,3)),fit=TRUE,param=TRUE)
+1-pchisq(X1indepX3givenX2.loglin$lrt,X1indepX3givenX2.loglin$df)
+#THIS MODEL FITS THE DATA WELL
+#Model 7
+X1indepX2givenX3.loglin = loglin(mytable,margin=list(c(1,3),c(2,3)),fit=TRUE,param=TRUE)
+1-pchisq(X1indepX2givenX3.loglin$lrt,X1indepX2givenX3.loglin$df)
+#this model does not fit the data well
+#Model 8
+no2nd.loglin = loglin(mytable,margin=list(c(1,2),c(1,3),c(2,3)),fit=TRUE,param=TRUE)
+1-pchisq(no2nd.loglin$lrt,no2nd.loglin$df)
+```
+
+```{r}
+# create df
+model <- NA
+model_name <- NA
+p <- NA
+
+table1 <- data.frame(model, model_name, p)
+
+table1[1, ] <- list("1)", "Saturated Model", "0")
+table1[nrow(table1) + 1, ] <- list("2)", "Weakness Independent of Fatigue and Intervention Group", "0")
+table1[nrow(table1) + 1, ] <- list("3)", "Fatigue Independent of Weakness and Intervention Group", "0")
+table1[nrow(table1) + 1, ] <- list("4)", "Intervention Group Independent of Weakness and Fatigue", "0.000793269")
+table1[nrow(table1) + 1, ] <- list("5)", "Fatigue Independent of Intervention Group given Weakness", "0.09446808")
+table1[nrow(table1) + 1, ] <- list("6)", "Weakness Independent of Intervention Group given Fatigue", "0.03435513")
+table1[nrow(table1) + 1, ] <- list("7)", "Weakness Independent of Fatigue given Intervention Group", "0")
+table1[nrow(table1) + 1, ] <- list("8)", "No Three Factor Interaction", "0.342498")
+
+table1_pretty <- table1 %>% 
+  gt() %>% 
+  tab_header(title = "Logistic Linear Models") %>% 
+  cols_label(model = "Model", model_name = "", p = "p-value") %>% 
+  gt_add_divider(columns = "model_name") %>% 
+  cols_align(align = c("left"), columns = c(p)) %>% 
+  gt_highlight_rows(
+    columns = everything(),
+    rows = c(5:6, 8), 
+    font_weight = "normal")  %>%
+  tab_footnote(footnote = "Table 3: The eight logistic linear regression models for weakness, fatigue, and intervention group. P-values above our alpha = 0.01 level are highlighted.")
+```
+
+```{r}
+1-pchisq(X1indepX3givenX2.loglin$lrt-no2nd.loglin$lrt,X1indepX3givenX2.loglin$df-no2nd.loglin$df)
+#We prefer model 8 and eliminate model 6
+
+#compare models 5 and 8
+1-pchisq(X2indepX3givenX1.loglin$lrt-no2nd.loglin$lrt,X2indepX3givenX1.loglin$df-no2nd.loglin$df)
+```

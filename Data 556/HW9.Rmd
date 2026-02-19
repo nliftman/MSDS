@@ -1,0 +1,61 @@
+---
+title: "HW9"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Problem 1 
+```{r}
+#load libraries
+library(nnet)
+library(lmtest)
+#create a list 
+disease <- c(1167, 1509, 763, 234, 107, 14, 377, 16, 225, 2, 29, 0, 186, 179, 130, 19, 11, 2)
+#create an array
+dis.array <- array(disease, c(2,3,3))
+#saturated log-linear model
+sat.log = loglin(dis.array, margin = list(c(1,2)), fit = TRUE, param = TRUE)
+#check p-value for testing the null hypothesis for G^2
+1-pchisq(sat.log$lrt, sat.log$df)
+sat.log
+```
+
+We return a 1, which tells us that the saturated model does fit the data well. We will look at other models as well, but based on the saturated log-linear model we know that we have statistically significant evidence to suggest that there is a relationship between SNP1 and SNP 2 based on if they have the disease. We can also check for the independence of specific relationships (such as X1 to X2 and 3):
+
+```{r}
+x1indep = loglin(dis.array, margin = list(1, c(2,3)), fit = TRUE, param = TRUE)
+#check p-value for testing the null hypothesis for G^2
+1-pchisq(x1indep$lrt, x1indep$df)
+x1indep
+```
+
+Based on the G^2 equal to zero, we can see that this does not fit the data correctly, indicating that X1 is not independent. What this means for our data is that if someones has the disease, this does tell us some information about X2 and X3. 
+
+We can then do the same thing for both X2 and X3:
+```{r}
+#for x2 being independent
+x2indep = loglin(dis.array, margin = list(2, c(1,3)), fit = TRUE, param = TRUE)
+#check p-value for testing the null hypothesis for G^2
+1-pchisq(x2indep$lrt, x2indep$df)
+x2indep
+#for x3 being independent
+x3indep = loglin(dis.array, margin = list(3, c(1,2)), fit = TRUE, param = TRUE)
+#check p-value for testing the null hypothesis for G^2
+1-pchisq(x3indep$lrt, x3indep$df)
+x3indep
+```
+Both of these models return us a p-value of 0 based on our G^2 statistic. What this means is that neither X2 or X3 are independent. This means that knowledge about SNP1 gives us information about if the person has the disease and what type of SNP 2 the person has. This also means that the knowledge about what type of SNP 2 the person has it tells us something about if they have the disease and what type of SNP 1 they have. 
+
+We can now move on to models of conditional independence:
+
+```{r}
+x2indepX3givenX1 = loglin(dis.array, margin = list(c(1,2), c(1,3)), fit = TRUE, param = TRUE)
+1-pchisq(x2indepX3givenX1$lrt, x2indepX3givenX1$df)
+x2indepX3givenX1
+```
+
+We can see that this is quite high, which means that this does fit the data well. This makes complete sense since if a simple model fits the dataset a more complex model that embeds it is also likely to fit the dataset. And we know that our saturated log-linear model is nested in the conditional independence model above. 
+
+
+

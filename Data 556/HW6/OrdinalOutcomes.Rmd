@@ -1,0 +1,77 @@
+---
+title: "DATA 556: Regression for ordinal outcomes"
+author: "Adrian Dobra (adobra@uw.edu)"
+date: ""
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analysis of Mental Impairment data
+
+
+```{r, echo=TRUE, fig.width=10, fig.height=6}
+data <- read.table("mentalimpairment-data.txt",header=TRUE)
+attach(data)
+
+#first do not take into consideration the order
+library(nnet)
+(M0 = multinom(Impairment ~ 1))
+summary(M0)
+BIC(M0)
+
+(Ms = multinom(Impairment ~ SES))
+summary(Ms)
+BIC(Ms)
+
+(Me = multinom(Impairment ~ Events))
+summary(Me)
+BIC(Me)
+
+(M = multinom(Impairment ~ SES + Events))
+summary(M)
+BIC(M)
+
+1-pchisq(M0$deviance-Me$deviance,length(coef(Me))-length(coef(M0)))
+
+BIC(M0)
+BIC(Ms)
+BIC(Me)
+BIC(M)
+
+AIC(M0)
+AIC(Ms)
+AIC(Me)
+AIC(M)
+
+
+#now take the order into account
+library(MASS)
+
+Impairment = factor(Impairment,levels=c("Well","Mild","Moderate","Impaired"))
+
+(orderM0 = polr(Impairment ~ 1))
+summary(orderM0)
+BIC(orderM0)
+
+(orderMs = polr(Impairment ~ SES))
+summary(orderMs)
+BIC(orderMs)
+
+(orderMe = polr(Impairment ~ Events))
+summary(orderMe)
+BIC(orderMe)
+
+(orderM = polr(Impairment ~ SES + Events))
+summary(orderM)
+BIC(orderM)
+
+#get the slopes
+coef(orderM)
+#get the intercepts
+orderM$zeta
+#fitted probabilities
+orderM$fitted
+```

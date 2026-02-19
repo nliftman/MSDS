@@ -1,0 +1,78 @@
+---
+title: "HW8"
+author: "Naomi Liftman"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+```{r warning = FALSE, message = FALSE, error = FALSE}
+library(nnet)
+library(lmtest)
+```
+
+# Problem 1 
+## 1. Fit the log-linear model of independence and determine if it fits the data well.
+```{r}
+#create the table
+crones = c(2037, 1757, 958, 218)
+crones.array = array(crones, c(2,2))
+#create independent model
+indepmodel = loglin(crones.array, margin=list(1,2),fit=TRUE,param=TRUE)
+indepmodel
+```
+
+The model we have fit has  $u = 6.940862, u_{1(1)} = 0.2081879, u_{1(2)} = -0.2081879, u_{2(1)} = -0.585651, u_{2(2)} = 0.585651$. To check for the goodness of fit of this model we can see the Chi-Squared value using both $G^2$ and $X^2$. 
+
+```{r}
+#create the saturated model
+satmodel = loglin(crones.array, margin=list(c(1,2)),fit=TRUE,param=TRUE)
+#testing the p-values
+1-pchisq(indepmodel$pearson-satmodel$pearson, indepmodel$df-satmodel$df)
+1-pchisq(indepmodel$lrt-satmodel$lrt, indepmodel$df-satmodel$df)
+```
+
+What we can see is that both of our chi-squared statistics are equivalent to zero, this means that we reject the null hypothesis and we have evidence to suggest there is a relationship between SNP 2 and Crohns disease. 
+
+## 2. Derive the logistic regression of X1 given X2 from the log-linear model you chose. Provide an interpretation for this regression equation.
+
+```{r}
+#instead of an array, now just make two vectors
+disease <- rep(c(0,1), times = c(2037 + 958, 1757 + 218))
+genotype <- c(rep(0,2037), rep(1,958), rep(0, 1757), rep(1, 218))
+
+#fit the model
+logmod <- glm(disease ~ genotype, family = binomial())
+summary(logmod)
+```
+
+Due to the previous logistic model, we know that there is an interaction between the genotype and Crohns disease. What are model tells us is that we have statistically significant evidence to suggest that having genotype Bb or bb decreases the log-odds of having Crohns disease by 1.33248 for our alpha level of .05. 
+
+# Problem 2 
+## 1. Caluclate the asymtotic p-value for testing independence versus interaction.
+```{r}
+#create the table
+crohns_2 = c(2037, 1757, 631, 18, 327, 200)
+crohns_2.array = array(crohns_2, c(2,3))
+#create saturated model
+indep2model = loglin(crohns_2.array, margin=list(1,2),fit=TRUE,param=TRUE)
+#checking the independent p-value
+1-pchisq(indep2model$lrt,indep2model$df)
+```
+
+We get an asymptomatic p-value equivalent to zero, which means that we reject the null hypothesis that these two variables are independent. That means that we do have statistically significant evidence to believe that there is an interaction between SNP 2 and Crohns. 
+
+## 2. Based on your choice of log-linear model, derive the regression of disease given SNP 2. 
+```{r}
+#instead of an array, now just make two vectors
+snp <- rep(c(0,1), times = c(2037 + 958, 1757 + 218))
+genotype <- c(rep(0,2037), rep(1,958), rep(0, 1757), rep(1, 218))
+
+snp <- rep(c(0,1), times = c(2037 + 958, 1757 + 218))
+genotype <- c(rep(0,2037), rep(1,631), rep(2, 327), rep(0, 1757), rep(1, 18), rep(2,200))
+
+#fit the model
+logmod <- glm(snp ~ genotype, family = quasibinomial())
+summary(logmod)
+```
+
+Due to the previous problem, we know there is an interaction between the genotype and Crohns disease. What we can tell from this new model, is that we have statistically significant evidence to suggest that having the genotype Bb decreases the log-odds of you having Crohns disease by 0.55330 and having the genotype bb dicreases your log-odds of having Crohns disease by a further 0.55330. These are all at the alpha level of .05. 
+

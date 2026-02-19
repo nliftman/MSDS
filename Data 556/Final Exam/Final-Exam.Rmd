@@ -1,0 +1,189 @@
+---
+title: "Final Exam"
+author: "Naomi Liftman"
+date: "December 3, 2025"
+output:
+  pdf_document: default
+  html_document: default
+---
+# Problem 1
+## Fit appropriate regression models for fatigue (SSC-F) given weakness (SSC-W) and treatment group (IC). Select the regression model that is best supported by the data using the likelihood ratio test, AIC and BIC. Please justify your answers in writing and with code.
+
+We will start by fitting a model with only fatigue in the model. We can then fit a model of fatigue given weakness and a model of fatigue given treatment group. We can then fit two models for fatigue given weakness and treatment, one where it is weakness plus treatment and one where it is the interaction of weakness and treatment. So in total we can fit five models. For each of these models we will then find the AIC and BIC scores. All of this can be found below in table 1. 
+
+!(/Users/naomiliftman/Desktop/MSDS/Data 556/Final Exam/Table1.png)
+
+What we can see from table 1 is that based on AIC and BIC scores model four fits our data the best (we are looking for the smallest AIC and BIC scores). However, we can see that both model two and five have similar BIC and AIC scores. Thus we may want to use a likelihood ratio test to compare each of these models to model four. When we compare model two to model four we see that we have a p-value of 0.03415. What this means is that model four is significantly more accurate than model two at the $\alpha = .05$ level. We can perform the same tests for model five versus model four which returns a p-value of 0.3425. This means that we do not have evidence to suggest that model model four is significantly more accurate than model five. So we believe they are relatively similar in accuracy; however, since the non-interaction model (model 4) is less complicated we are inclined to use this model. 
+
+We have used AIC, BIC, and likelihood ratio tests to show that Model 4 is the best model we can fit to represent our data. This model is $Fatigue = Weakness + Treatement Group$. 
+
+# Problem 2
+## Fit appropriate regression models for weakness (SSC-W) given fatigue (SSC-F) and treatment group (IC). Select the regression model that is best supported by the data using the likelihood ratio test, AIC and BIC. Please justify your answers in writing and with code.
+
+
+REGRESSIon
+
+# Problem 3
+## Fit loglinear models for weakness (SSC-W), fatigue (SSC-F) and treatment group (IC). Select the loglinear model that is best supported by the data using G2. Please justify your answers in writing and with code.
+
+We can first look at the independence model, which is a model that assumes all three of our variables are independent of each other. What we find is that this model does not fit the data well based on our chi-squared p-value of 0 based on $G^2$. Moving from that, since we are looking at three variables it is possible that the first variable is independent from the second but not independent from the third (and all iterations of this). This could cause our initial independence model to be an improper fit of the data, so o it is important that we create models which check for this type of independence. What we find is that again, all three of these models are not good fits of the data due to their $G^2$ based p-values of 0, 0, and 0.00079 respectively. 
+
+We can then look at log-linear models for fatigue given weakness and treatment group. We can fit our first model with fatigue independent of treatment group given weakness. We can then fit a second model for fatigue independent of treatment group given weakness. And then our final model (model three) would be that fatigue is independent of both weakness and treatment groups. 
+
+Now that we see that non of our independence models fit our data, we can look more simply at regression models. We are going to use the chi-squared statistic with $G^2$ to judge the fit of our model. 
+
+# Problem 4
+## Summarize your findings in the statistical analyses you perform in the first three problems. Is weakness related to fatigue? If so, in which way? Is the intervention effective in altering the levels of weakness or fatigue? Are the findings from your regression models consistent with those from your loglinear models?
+
+
+
+
+# All Code Used
+## Code for Problem 1
+```{r}
+#libraries 
+library(nnet)
+library(lmtest)
+library(AICcmodavg)
+#load in the data
+data = read.csv("joachim-ic.csv") 
+#create a three way table
+mytable <- xtabs(~ ssc2 + ssc4 + ic, data = data) 
+#check that the table works for IC 0 and IC 1 
+mytable
+#IMPORTANT!!!!
+#SSC4 = Fatigue
+#SSC2 = Weakness
+```
+
+```{r}
+#making the data work for regression models
+X = as.factor(data[,"ssc2"]) # weakness
+Y = as.factor(data[,"ssc4"]) # fatigue 
+time = as.factor(data[,"time"]) #dont care
+ic = data[,"ic"] #intervention
+
+#fitting all the models
+M1 = multinom(Y ~ 1)
+AIC(M1)
+BIC(M1)
+M2 = multinom(Y ~ X)
+AIC(M2)
+BIC(M2)
+M3 = multinom(Y ~ ic)
+AIC(M3)
+BIC(M3)
+M4 = multinom(Y ~ X + ic)
+AIC(M4)
+BIC(M4)
+M5 = multinom(Y ~ X*ic)
+AIC(M5)
+BIC(M5)
+#dont need to look at any of the ones with time since we were told to ignore it 
+#lr test! 
+lrtest(M2, M4)
+lrtest(M4, M5)
+```
+
+## First Table Code 
+```{r}
+# create df
+model <- NA
+aic <- NA
+bic <- NA
+
+table1 <- data.frame(model, aic, bic)
+
+table1[1, ] <- list("Fatigue ~ 1", "3590.826", "3606.434")
+table1[nrow(table1) + 1, ] <- list("Fatigue ~ Weakness", "2800.887", "2863.318")
+table1[nrow(table1) + 1, ] <- list("Fatigue ~ Intervention Group", "3580.742", "3611.958")
+table1[nrow(table1) + 1, ] <- list("Fatigue ~ Weakness + Intervention Group", "2798.225", "2876.265")
+table1[nrow(table1) + 1, ] <- list("Fatigue ~ Weakness * Intervention Group", "2806.126", "2930.990")
+
+table1_pretty <- table1 %>% 
+  gt() %>% 
+  tab_header(title = "Fatigue Regression Models") %>% 
+  cols_label(model = "Model", aic = "AIC", bic = "BIC") %>% 
+  gt_add_divider(columns = "model") %>% 
+  gt_add_divider(columns = "aic") %>% 
+  cols_align(align = c("left"), columns = c(aic, bic)) %>% 
+  gt_highlight_rows(
+    columns = everything(),
+    rows = c(4), 
+    font_weight = "normal")  %>%
+  tab_footnote(footnote = "Table 1: The five regression models fit for the fatigue variable. The model with the smallest AIC and BIC is highlighted.")
+table1_pretty  
+```
+
+
+
+
+
+```{r}
+#Model 6
+X1indepX3givenX2.loglin = loglin(mytable,margin=list(c(1,2),c(2,3)),fit=TRUE,param=TRUE)
+#AIC(X1indepX3givenX2.loglin)
+1-pchisq(X1indepX3givenX2.loglin$lrt,X1indepX3givenX2.loglin$df)
+#THIS MODEL FITS THE DATA WELL
+
+#Model 7
+X1indepX2givenX3.loglin = loglin(mytable,margin=list(c(1,3),c(2,3)),fit=TRUE,param=TRUE)
+1-pchisq(X1indepX2givenX3.loglin$lrt,X1indepX2givenX3.loglin$df)
+#this model does not fit the data well
+
+
+models <- list(X1indepX3givenX2.loglin, X1indepX2givenX3.loglin)
+aictab(cand.set = models, modnames = NULL)
+```
+
+
+## Code for problem 3
+
+```{r}
+#first model of independence
+indep.loglin = loglin(mytable,margin=list(1,2,3),fit=TRUE,param=TRUE);
+1-pchisq(indep.loglin$lrt,indep.loglin$df)
+#does not fit the data well
+
+#Model 2
+X1indepX2X3.loglin = loglin(mytable,margin=list(1,c(2,3)),fit=TRUE,param=TRUE)
+1-pchisq(X1indepX2X3.loglin$lrt,X1indepX2X3.loglin$df)
+#does not fit the data well
+
+#Model 3
+X2indepX1X3.loglin = loglin(mytable,margin=list(2,c(1,3)),fit=TRUE,param=TRUE)
+1-pchisq(X2indepX1X3.loglin$lrt,X2indepX1X3.loglin$df)
+#does not fit the data well
+
+#Model 4
+X3indepX1X2.loglin = loglin(mytable,margin=list(3,c(1,2)),fit=TRUE,param=TRUE)
+1-pchisq(X3indepX1X2.loglin$lrt,X3indepX1X2.loglin$df)
+#again does not fit the data well
+
+#now that we know they are not independent, we are going to use regression models
+#code to allow for us to use multinom for the models
+X = as.factor(data[,"ssc2"])
+Y = as.factor(data[,"ssc4"])
+time = as.factor(data[,"time"])
+ic = data[,"ic"]
+
+#first model
+M1 = multinom(Y ~ 1)
+AIC(M1)
+#AIC of 3590.826
+
+#second model
+M2 = multinom(Y ~ X)
+AIC(M2)
+#AIC 2800.887
+
+#stop checking AIC since we can use the which min function 
+#also we were told to ignore time, so I removed all models with time variable
+M3 = multinom(Y ~ ic)
+M4 = multinom(Y ~ X + ic)
+#checking the which min AIC
+which.min(c(AIC(M1),AIC(M2),AIC(M3),AIC(M4)))
+#its the forth model with the aic of 2798.225
+AIC(M4)
+```
+

@@ -1,0 +1,198 @@
+---
+title: "HW5"
+output:
+  pdf_document: default
+  html_document: default
+---
+### 1. Determine which variables should be excluded from the analysis up front. Examples include “hours”, “wage”, “lwage.” These are variables that should not be seen as explanatory for the binary response “inlf”.
+```{r warning = FALSE, message = FALSE, error = FALSE}
+#packages we need
+library(rio)
+library(stats)
+library(ggplot2)
+library(tidyverse)
+library(janitor)
+library(lmtest)
+library(flexmix)
+library(DescTools)
+
+#load in the data
+data <- import("MROZ.dta")
+
+data_short <- data %>% 
+  select(-hours, -wage, -repwage, -lwage)
+```
+
+We know 'inlf' refers to if the person is in the workforce and so we can remove any of the variables that are calculated based on the assumption the person already has a wage. 
+
+### 2. Determine if you need to take any transformation of the remaining explanatory variables. For example, “age” should be used as “log(age)”, etc.
+
+```{r}
+#tranform some variables
+data_short[,"age"] = log(data_short[,"age"])
+data_short[,"hushrs"] = log(data_short[,"hushrs"])
+data_short[,"faminc"] = log(data_short[,"faminc"])
+data_short[,"huswage"] = log(data_short[,"huswage"])
+#data_short[,"nwifeinc"] = log(data_short[,"nwifeinc"]) - cannot do this because one of the inputs is negative
+```
+
+We will transform the age and the hours worked by husband worked, family income, and husband wage to be on a log scale because most of our variables have a range of at most 20; however, each of these variables have a much larger range. So putting them on a log scale helps deal with these huge ranges. 
+
+### 3. Determine an initial logistic regression M0 using a heuristic argument of your choice. You could include the explanatory variables with the highest absolute correlation with the response. You can come up with another idea if you like.
+
+```{r}
+#fit the model involving all the 18 indendent variables
+fullmodel = glm(inlf~.,family=binomial(link=logit),data=data_short)
+
+#find the correlation of each explanatory variable with the response
+for(i in 2:18){
+	cat(colnames(data_short)[i],"[",i,"] = ",cor(data_short[,1],data_short[,i]),"\n");	
+}
+```
+What we can see based on these correlation coefficients is that the most highly correlated variables are "kidslt6" with -0.214, "educ" with 0.187, "mtr" with -0.145, "exper" with 0.342 and "expersq" with 0.261. We will not include the "expersq" variable because it is a transofrmation of "exper" and "exper" is more highly correlated with our outcome variable than "expersq". So now we can fit that model.
+
+```{r}
+#fit a logistic regression with these variables
+M0 = glm(inlf~kidslt6+educ+mtr+exper,family=binomial(link=logit),data=data_short)
+```
+
+
+### 4. Fit the model M0 and make sure there are no numerical errors when the MLEs are calculated. Give a formula for the fitted model and discuss its validity in term of standardized residuals, fitted values, etc. Produce relevant plots.
+
+```{r}
+#fit a logistic regression with these variables
+M0 = glm(inlf~kidslt6+educ+mtr+exper,family=binomial(link=logit),data=data_short)
+```
+The fitted model looks like this:
+$inlf = -1.50102 - 0.75642(kidslt6) + 0.17548(educ) - 1.68537(mtr) + 0.09624(exper)$
+
+And to check the validity of our model we want to check that our model has homoscedasticity and normalicy of the residuals. To check these we need to model the residuals:
+
+```{r}
+#make a plot of the fitted values
+myind = 1:length(data_short$inlf)
+plot(myind,M0$fitted.values,xlab="Observation number",ylab="Fitted probabilities")
+points(myind[data_short$inlf==0],M0$fitted.values[data_short$inlf==0],col="blue")
+points(myind[data_short$inlf==1],M0$fitted.values[data_short$inlf==1],col="red")
+abline(h=0.5)
+```
+
+As we can see there is an even spread of the residuals, so it follows homoscedasticity. Now we have to check normalicy. 
+
+```{r}
+plot(M0)
+```
+What we can see is that these do not follow a super normal curve, meaning our model does not follow this rule. 
+
+### 5. Use the function step to improve M0 in terms of AIC. Let M be the final model returned by step.
+
+```{r}
+Mempty = glm(inlf~1,family=binomial(link=logit),data=data_short)
+Mfull = glm(inlf~.,family=binomial(link=logit),data=data_short)
+M1 = step(Mempty,trace=TRUE,direction="both",scope=list(upper = Mfull,lower = Mempty))
+```
+
+```{r}
+#so our best AIC model:
+M <- glm(inlf ~ exper + age + kidslt6 + educ + expersq + faminc + nwifeinc + mtr + huswage + hushrs + kidsge6 + huseduc, data = data_short)
+```
+
+### 6. Consider all the models that are obtained by deleting one variable from M. Perform likelihood ratio tests to see whether any variables should be removed from M.
+
+```{r}
+full_model <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod1 <- glm(inlf ~ kidsge6 + age + educ + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod2 <- glm(inlf ~ kidslt6  + age + educ + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod3 <- glm(inlf ~ kidslt6 + kidsge6 + educ + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod4 <- glm(inlf ~ kidslt6 + kidsge6 + age + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod5 <- glm(inlf ~ kidslt6 + kidsge6 + age + educ + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod6 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs  + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod7 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage  + huswage + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod8 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc  + faminc + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod9 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc + huswage + mtr + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod10 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc + huswage + faminc  + motheduc + fatheduc + unem + city + exper, data = data_short)
+mod11 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc + huswage + faminc + mtr + fatheduc + unem + city + exper, data = data_short)
+mod12 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + unem + city + exper, data = data_short)
+mod13 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc  + city + exper, data = data_short)
+mod14 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem  + exper, data = data_short)
+mod15 <- glm(inlf ~kidslt6 + kidsge6 + age + educ + hushrs + husage + huseduc + huswage + faminc + mtr + motheduc + fatheduc + unem + city , data = data_short)
+lrtest(full_model, mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, mod11, mod12, mod13, mod14, mod15)
+```
+
+What we can see is that all of the models had a p-value of less than .05. This means that they are all statistically significant and should remain in the model. So our model based on AIC would be our full model.
+
+
+### 7. Compute the BIC scores of the same models. Which model would you pick with respect to BIC?
+
+```{r}
+BIC(full_model)
+BIC(mod1)
+BIC(mod2)
+BIC(mod3)
+BIC(mod4)
+BIC(mod5)
+BIC(mod6)
+BIC(mod7)
+BIC(mod8)
+BIC(mod9)
+BIC(mod10)
+BIC(mod11)
+BIC(mod12)
+BIC(mod13)
+BIC(mod14)
+BIC(mod15)
+```
+
+We want to choose the model with the lowest BIC value, which we can see is model 12 with BIC of 893.1144. Although I will note that all of these values may seem quite high they are actually much smaller than smaller models as we can see below:
+
+```{r}
+small_mod <- glm(inlf ~ faminc, data = data_short)
+BIC(small_mod)
+#even bigger than before!
+```
+
+### 8. Now calculate the Brier scores of the same models. Which model would you pick now? What is the error rate of your preferred model?
+
+```{r}
+#calculate the Brier Score
+BrierScore(full_model)
+BrierScore(mod1)
+BrierScore(mod2)
+BrierScore(mod3)
+BrierScore(mod4)
+BrierScore(mod5)
+BrierScore(mod6)
+BrierScore(mod7)
+BrierScore(mod8)
+BrierScore(mod9)
+BrierScore(mod10)
+BrierScore(mod11)
+BrierScore(mod12)
+BrierScore(mod13)
+BrierScore(mod14)
+BrierScore(mod15)
+```
+
+We again are looking for the smallest score, and we can see there is actually a tie between our full model, and model 12. 
+
+### 9. Draw conclusions about what you learned from your analysis. Give a formula for your final model and interpret the regression coefficients (an interpretation in term of log-odds is fine). Discuss the statistical significance of each variable selected in the model.
+
+Even though we iterated through a lot of models I would say our best model is model M. This is because not only does it have the best AIC, it also has the smallest BIC and the smallest Brier Score compared to the models where we only took out a single variable:
+
+```{r}
+BIC(M)
+BrierScore(M)
+M
+summary(M)
+```
+
+What we have learned from this analysis is that if depending on the score you are deciding your model based on, you may get very different models! This is important because it highlights that data analysis is an artful science, where you can model the data in many different ways. 
+
+Our best model M looks like this:
+$inlf = 2.5260680 + 0.0303385(exper) - 0.5396025(age) - 0.1677966(kidslt6) + 0.0226401(educ) - (0.0005503)expersq + 0.5255716(faminc) - 0.0250688(nwifeinc) -  2.5210884(mtr) - 0.3056658(huswage) - 0.3579494(hushrs) + 0.0420671(kidsge6) - 0.0112428(huseduc)$
+
+What we can then say about each of the variables is as follows.Based on our model we know that for every single increase in actual labor market experience, while holding all else the same, the odds of a person participating in the labor force by 0.0303385. We can say the same thing for all of our variables, that based on our model we expect that for every single increase in our variable $i$ (using the units of the variable), while holding all else true, to effect the log-odds of a person participating in the workforce by the $exp(B_i)$
+
+We also know for every variable that has a p-value smaller than .05 that we can reject the null hypothesis, so we have statistically significant evidence that there is a relationship between that variable and the log-odds of a person participating in the labor force, while holding all else constant, at the alpha = .05 level. So the variables that we have evidence for a relationship at the .05 level are all except $huseduc$. 
+
+

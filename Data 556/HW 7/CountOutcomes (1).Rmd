@@ -1,0 +1,134 @@
+---
+title: "DATA 556: Regression for count outcomes"
+author: "Adrian Dobra (adobra@uw.edu)"
+date: ""
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analysis of Police Stops data
+
+stop and frisk data (with noise added to protect confidentiality)
+
+precincts are numbered 1-75
+ethnicity 1=black, 2=hispanic, 3=white
+crime type 1=violent, 2=weapons, 3=property, 4=drug
+
+
+```{r, echo=TRUE, fig.width=10, fig.height=6}
+frisk <- read.table("frisk.dat",header=TRUE)
+attach(frisk)
+
+n <- length(unique(precinct))*length(unique(eth))
+mystops <- numeric(n)
+myarrests <- numeric(n)
+myprecinct <- numeric(n)
+myeth <- numeric(n)
+
+k <- 1
+for(i in 1:length(unique(precinct)))
+{
+	for(j in 1:length(unique(eth)))
+	{
+		myprecinct[k] = i
+		myeth[k] = j
+		mystops[k] = sum(frisk[(precinct==i) & (eth==j),1])
+		myarrests[k] = sum(frisk[(precinct==i) & (eth==j),3])
+		k = k+1
+	}
+}
+
+
+mydata <- cbind(mystops,myarrests,myprecinct,myeth)
+write.table(mydata,file="policestops.txt",row.names=FALSE,col.names=TRUE)
+##########################################################
+data <- read.table("policestops.txt",header = TRUE)
+attach(data)
+
+model1A <- glm(mystops ~ 1,family=poisson(link = "log"))
+summary(model1A)
+
+model2A <- glm(mystops ~ factor(myeth),family=poisson(link = "log"))
+summary(model2A)
+
+model3A <- glm(mystops ~ factor(myeth)+factor(myprecinct),family=poisson(link = "log"))
+summary(model3A)
+
+###########################################
+model1B <- glm(mystops ~ log(myarrests),family=poisson(link = "log"))
+summary(model1B)
+
+model2B <- glm(mystops ~ log(myarrests)+factor(myeth),family=poisson(link = "log"))
+summary(model2B)
+
+model3B <- glm(mystops ~ log(myarrests)+factor(myeth)+factor(myprecinct),family=poisson(link = "log"))
+summary(model3B)
+
+#################################################
+model1 <- glm(mystops ~ 1,family=poisson(link = "log"),offset=log(myarrests))
+summary(model1)
+
+model2 <- glm(mystops ~ factor(myeth),family=poisson(link = "log"),offset=log(myarrests))
+summary(model2)
+
+model3 <- glm(mystops ~ factor(myeth)+factor(myprecinct),family=poisson(link = "log"),offset=log(myarrests))
+summary(model3)
+
+(p = length(coef(model3)))
+(yhat = predict(model3,type="response"))
+#residual plot
+z = (mystops-yhat)/sqrt(yhat)
+par(mfrow=c(1,2))
+plot(yhat,mystops-yhat,xlab="Predicted values",ylab="Raw residuals")
+plot(yhat,z,xlab="Predicted values",ylab="Standardized residuals")
+
+#overdispersion ratio
+sum(z^2/(n-p))
+#p-value
+1-pchisq(sum(z^2),n-p)
+
+#Negative binomial model
+library(MASS)
+model4 <- glm.nb(mystops ~ factor(myeth)+factor(myprecinct))
+summary(model4)
+
+
+
+
+################################################################
+data <- read.table("policestops.txt",header = TRUE)
+attach(data)
+
+model1 <- glm(mystops ~ factor(myeth)+factor(myprecinct),family=poisson(link = "log"),offset=log(myarrests))
+summary(model1)
+
+model2 <- glm(mystops ~ factor(myprecinct),family=poisson(link = "log"),offset=log(myarrests))
+summary(model2)
+
+model3 <- glm(mystops ~ factor(myeth),family=poisson(link = "log"),offset=log(myarrests))
+summary(model3)
+
+model4 <- glm(mystops ~ 1,family=poisson(link = "log"),offset=log(myarrests))
+summary(model4)
+
+################################################################
+
+ratio1 = rep(0,75)
+ratio2 = rep(0.75)
+
+for(i in 1:75)
+{
+ ratio1[i] = myarrests[(myprecinct==i)&(myeth==2)]*exp(coef(model1)["factor(myeth)2"])/myarrests[(myprecinct==i)&(myeth==1)]
+ ratio2[i] = myarrests[(myprecinct==i)&(myeth==3)]*exp(coef(model1)["factor(myeth)3"])/myarrests[(myprecinct==i)&(myeth==1)]	
+}
+
+plot.new()
+par(mfrow=c(1,1))
+plot(1:75,ratio2,type="l",lwd=2,xlab="Precinct",ylab="Ratio of expected stops")
+lines(1:75,ratio1,lwd=2,lty="dotted")
+abline(h=1)
+
+```

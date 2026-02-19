@@ -1,0 +1,221 @@
+---
+title: "HW 6"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+# Problem 1 The Mental Impairment Data
+(See Datasets and Code on the course website) come from a study of
+mental health for a random sample of adult residents of Alachua County,
+FL. It relates mental impairment to life events and socioeconomic status
+(SES). The outcome (mental impairment) is an ordinal variable with four
+levels: well, mild, moderate and impaired. Life events is a count
+variable indicating the number of important live events (e.g., new job,
+divorce, death in family) that occurred to the subject within the last
+three years. SES is a binary variable with 1 = high and 0 = low.
+
+## PART A.
+
+Disregard the natural ordering of mental impairment levels and fit a
+multinomial model that involves both independent variables “economic
+status” and “life events” using the function multinom. Per- form a
+likelihood ratio test to determine whether any of these two variables
+can be deleted from the model. Choose one model and determine the
+probability of being well, mild, moderate or impaired for John who has a
+low economic status and had seven important life events.
+
+```{r message = FALSE, results = 'hide', include = FALSE}
+#first do not take into consideration the order
+library(nnet)
+library(lmtest)
+data <- read.table("mentalimpairment-data.txt",header=TRUE)
+attach(data)
+#multinomial model with nothing in it 
+(M0 = multinom(Impairment ~ 1))
+```
+
+```{r}
+#with economic status
+(Ms = multinom(Impairment ~ SES))
+```
+
+```{r}
+#with life events
+(Me = multinom(Impairment ~ Events))
+```
+
+```{r}
+#both life events and economic status 
+(M = multinom(Impairment ~ SES + Events))
+summary(M)
+```
+
+```{r}
+# perform a likeliehood test 
+lrtest(M0, Me, Ms, M)
+```
+
+What we can see based on our likelihood ratio test is that only model
+three and four are statistically significant (with a p-value below .05).
+What this means is that we have no statistically significant evidence to
+suggest that the model with only $Events$ in it, is better at predicting
+$Impairment$ than an empty model. What this also means is that we have
+statistically significant proof that the model with $SES$ and the model
+with both $SES$ and $Events$ are better at predicting the $Imparment$
+than an empty model. We also know that a likelihood ratio test is not
+the only way to check the validity of each model. While we can now only
+look at model 3 and 4 we can check their BIC and AIC scores.
+
+```{r}
+#bic for each of our models
+BIC(Ms)
+BIC(M)
+#AIC for each of our models
+AIC(Ms)
+AIC(M)
+```
+
+We can see that the lower BIC score is the model with only $SES$ in it,
+but the lower AIC score is the model with both $SES$ and $Events$. Since
+this does not help us narrow down our target model, we will go with the
+model that passes the likelihood ratio test at the .01 alpha level as
+well as the .05 alpha level which is the model with only $SES$ in it.
+
+```{r}
+Ms
+```
+
+Now that we have chosen our model we can look at the probability of
+John's impairment based on his low economic status and seven important
+life events. Since we chose the model with only $SES$ we do not need to
+know how many life events, so we are only going on the low $SES$. Our
+first equation is: log(P(y = mild\|SES)/P(y = imp\|SES)) = -0.233 +
+.916(SEC); however John having a low $SES$ corresponds with our $SES$ =
+0, so log(P(y = mild\|SES)/P(y = imp\|SES)) = -0.233. We can do the same
+for the other impairment outcomes: log(P(y = moderate\|SES)/P(y =
+imp\|SES)) \~= 0. log(P(y=well\|SES)/P(y = imp\|SES)) = -0.231.
+
+## PART B.
+
+Answer the same questions, but this time take into consideration the
+ordering of the mental im- pairment levels.
+
+```{r}
+#now take the order into account
+library(MASS)
+#ordering impairment
+Impairment = factor(Impairment,levels=c("Well","Mild","Moderate","Impaired"))
+#order and fit the empty model
+(orderM0 = polr(Impairment ~ 1))
+#model with SES
+(orderMs = polr(Impairment ~ SES))
+#model with events
+(orderMe = polr(Impairment ~ Events))
+#model with ses and events
+(orderM = polr(Impairment ~ SES + Events))
+#perform likelihood test
+lrtest(orderM0, orderMe, orderMs, orderM)
+```
+
+What we can see based on our likelihood ratio test is that all of our
+models have a p-value below our alpha level, which means that they are
+all statistically significant in explaining impairment. So we need to
+look at AIC and BIC:
+
+```{r}
+AIC(orderM0)
+AIC(orderMe)
+AIC(orderMs)
+AIC(orderM)
+```
+
+We can see that the lowest AIC is the model with both variables
+included. Now to look at BIC:
+
+```{r}
+BIC(orderM0)
+BIC(orderMe)
+AIC(orderMs)
+AIC(orderM)
+```
+
+And once again we can see that the lowest BIC is the model with both
+variables. So that is the model we will use to judge the probability of
+John's level of impairment.
+
+```{r}
+orderM
+```
+
+Again we know our SES is 0 because John is low income, so we can
+completely remove that from the formulas. Our first equation is: log(P(y
+= mild\|SES)/P(y = well\|SES)) = .318(7) - 0.281. log(P(y =
+moderate\|SES)/P(y = mild\|SES)) = .318(7) + 1.213 log(P(y=imp\|SES)/P(y
+= mod\|SES)) = .318(7) + 2.209
+
+# Problem 2
+
+The Alligator Food Choice Data (See Datasets and Code on the course
+website) come from a study of factors influencing the primary food
+choice of alligators. The study comprised 219 alligators captured in
+four Florida lakes. There are five categories of food choices: fish,
+invertebrate, reptile, bird and other. The alligators were classified
+according to L = lake of capture (Hancock, Oklawaha, Trafford, George),
+G = gender (male, female), and S = size (≤ 2.3 meters, \> 2.3 meters
+long). Discuss which factors seem to influence alligators’ food choice
+by fitting appropriate multinomial models. According to your model, what
+is the probability that a male alligator from Lake Trafford that is 3
+meters long prefers reptiles for dinner?
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+#load in the data
+data <- read.table("alligatorfood-data.txt",header=TRUE)
+attach(data)
+#cbind
+y = cbind(Fish,Invertebrate,Reptile,Bird,Other)
+#empty model
+(M1 = multinom(y ~ 1))
+#model based on lake
+(M2 = multinom(y ~ Lake))
+#model based on gender
+(M3 = multinom(y ~ Gender))
+#model based on size
+(M4 = multinom(y ~ Size))
+#model based on lake and gender
+(M5 = multinom(y ~ Lake + Gender))
+#model based on lake and size
+(M6 = multinom(y ~ Lake + Size))
+#model based on gender and size
+(M7 = multinom(y ~ Gender + Size))
+#model based on all three
+(M8 = multinom(y ~ Lake+Gender+Size))
+```
+
+```{r}
+lrtest(M1, M2, M3, M4, M5, M6, M7, M8)
+```
+What we can see is that all of our results are statistically significant which does not help us narrow down our models. We can look at the AIC that are printed with the models above and see the smallest AIC is the model that includes $lake$ and $size$. We can also check BIC:
+```{r}
+BIC(M1)
+BIC(M2)
+BIC(M3)
+BIC(M4)
+BIC(M5)
+BIC(M6)
+BIC(M7)
+BIC(M8)
+```
+We can see that most of the models are similar in BIC scores but hte smallest is the model that does not include anything, or our empty model. This is not super helpful since we have models that include more data and are equally as helpful (based on AIC or likelihood tests) so we are going to use the model with $lake$ and $size$.
+
+```{r}
+M6
+```
+According to your model, we can find the probability that a male alligator from Lake Trafford, is three meters long and prefers reptiles. Since our model does not include gender, we can keep that out. But our model does include size and lake, so we can look at size = 1 (since that corresponds with 2.3 meters or larger). We know our model is as follows:
+log(P(reptile|lake = trafford & size = 1)/P(fish|lake = trafford & size = 1)) = -3.66 + 1.24 + .351. We can exclude the other lakes from our model because they are dummy variables with 0 if we are referring to another lake and 1 if referring to that lake. 
+

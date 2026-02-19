@@ -1,0 +1,25 @@
+---
+title: "HW4"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+library(stats)
+```
+
+# Problem 4
+## Let N ~ Pois(lambda1) be the number of movies that will be released next year. Suppose that for each movie the number of tickets sold is Pois(lambda2), independently.
+Use simulations in R (the statistical programming language) to numerically estimate mean and the
+variance of the number of movie tickets that will be sold next year assuming that the mean number of movies
+released each year in the US is 700, and that, on average, 800000 tickets were sold for each movie
+
+```{r}
+# estimate the average number of movie tickets sold which we know is:
+
+tickets_sold = rpois(n = 100000, lambda = 800)
+movies_released = rpois(n = 10000, lambda = 700)
+
+mean(tickets_sold*movies_released)
+```
+

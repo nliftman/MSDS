@@ -1,0 +1,168 @@
+---
+title: "HW7"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Problem 1
+## Part A
+
+```{r warning = FALSE, message = FALSE, error = FALSE}
+#libraries
+library(nnet)
+library(lmtest)
+#load data
+data <- read.table("policestops.txt",header=TRUE)
+#fit the four models
+me <- glm(mystops ~ 1, family = poisson(link = "log"), data = data)
+met <- glm(mystops ~ factor(myeth), family = poisson(link = "log"), data = data)
+mpre <- glm(mystops ~ factor(myprecinct), family = poisson(link = "log"), data = data)
+mtotal <- glm(mystops ~ factor(myeth)+factor(myprecinct),family=poisson(link = "log"), data = data)
+```
+
+```{r}
+AIC(me)
+AIC(met)
+AIC(mpre)
+AIC(mtotal)
+```
+Based on AIC we can see that by far the model with both ethnicity and precinct (the total model) is the best. 
+
+```{r}
+BIC(me)
+BIC(met)
+BIC(mpre)
+BIC(mtotal)
+```
+We can also see that based on BIC, once again the model with ethnicity and precinct is the best. It is difficult to write out the model because it has 74 'dummy variables' for precinct and two 'dummy variables' for ethnicity. But we can find the expected number of stops in precinct 3 for black people.
+
+```{r}
+summary(mtotal)
+```
+Given that the base formula without the two dummy variables is for black people, we do not need to use any of the ethnicity variables. But we will need to look at unit 3. This gives us:
+$logE(stops) = 5.320809 + 1.426389(1)$. So we expect there to be the log expectation of stops to be 6.747198, or 7 stops. 
+
+We can do the same thing for expected number of stops in precinct 3 for white people: $logE(stops) = 5.320809 + 1.426389(1) - 1.414281$ which tells us the log odds expectation to be 5.332917. 
+
+```{r}
+5.320809 - 1.414281
+```
+
+We can answer the same questions for precinct 1. And get that for black people: $logE(stops) = 5.320809$ giving us (5.320809) and for white people $logE(stops) = 5.320809 - 1.414281$ we get 3.906528. This is interesting because we can see that the log odds expectation for black people is higher in both precincts than white people. 
+
+## Part B. 
+Which model would you prefer based on AIC? Which model would you prefer based on BIC? Would
+you prefer a model with a baseline or a model without a baseline? Justify your answers. Find out
+the expected number of stops in precincts 1 and 3 for blacks and whites based on your final choice
+of model
+
+```{r, methods = FALSE, error = FALSE, warning = FALSE}
+#create the models
+mep <- glm(mystops ~ 1, family = poisson(link = "log"), data = data, offset = log(myarrests))
+metp <- glm(mystops ~ factor(myeth), family = poisson(link = "log"), data = data,  offset = log(myarrests))
+mprep <- glm(mystops ~ factor(myprecinct), family = poisson(link = "log"), data = data,  offset = log(myarrests))
+mtotalp <- glm(mystops ~ factor(myeth)+factor(myprecinct),family=poisson(link = "log"), data = data,  offset = log(myarrests))
+```
+
+```{r}
+AIC(mep)
+AIC(metp)
+AIC(mprep)
+AIC(mtotalp)
+```
+What we see is that the best model, now that we have offset it by the number of arrests is the full model with both ethnicity and precinct. 
+
+```{r}
+BIC(mep)
+BIC(metp)
+BIC(mprep)
+BIC(mtotalp)
+```
+What we can see is that again our best model is the full model. We would of course prefer the model with the baseline. This is because our first model assumes that the different precincts are comparable. This is not true. The precincts may have different factors (ethnic breakdown, number of cops, patrolling, etc.) that make them non-comparable! Thus we need to have this baseline that uses the number of arrests so that we can better scale the model to compare the different precincts to each other. 
+
+```{r}
+summary(mtotalp)
+```
+
+For the expected number of stops in precinct 1 for black people: $logE(stops) = -1.378868$
+Expected number of stops in precinct 1 for white people: $logE(stops) = -1.378868 - 0.419001$ = -1.797869
+Black people in precinct 1: $logE(stops) = -1.378868 - 0.419001$ = -1.797869
+White people in precinct 3: $logE(stops) = -1.378868 - 0.419001 + 0.559955$ = -1.237914
+
+## Part C. 
+
+Looking at our final model we can see that ethnicity is indeed statistically significant, which tells us that both of our dummy variables do effect the model. What we can say is that we do have statistically significant evidence that for every single increase in arrest in any given precinct, we expect white people to be pulled over logE(-0.419001) times less than black people. We also can say that we have statistically significant evidence that for every single increase in arrest in any given precinct (holding precinct constant), based on our model we expect hispanic people to be pulled over logE(0.010188) times more than black people. This highlights that black and hispanic people do get stopped more times than white people, showing racial bias. 
+
+# Problem 2 
+## 1. 
+We get the column totals of 46 (Yes) and 1314 (No) and row totals 684 (Placebo) and 658 (Asprin). Our grand total is 1,360.
+
+## 2. 
+We will use the subscripts of Y,N for the yes and now columns and P,A for placebo and asprin rows. We get the following upper and lower bounds:
+
+max{0} $\leq n_{yp} \leq$ min{46}
+max{0} $\leq n_{ya} \leq$ min{46}
+max{638} $\leq n_{np} \leq$ min{684}
+max{630} $\leq n_{na} \leq$ min{676}
+
+## 3. 
+We know that the number of tables is the upper bound minus the lower bound. This is the same across the four Fachet bounds and is 46 tables. We can say the count in the (1,1) tables is $x$ and thus we can set T = {(x, 46 -x, 684 - x, 676 - x) : x $\in$ {0, 1, . . . , 46}}. 
+
+## 4. 
+```{r}
+#create the table
+myocardial = c(28, 18, 656, 658)
+myocardial.array = array(myocardial, c(2,2))
+#create saturated model
+sat_model = loglin(myocardial.array, margin=list(c(1,2)),fit=TRUE,param=TRUE)
+sat_model
+```
+
+This gives us $u = 4.799485, u_{1(1)} = 0.1096972, u_{1(2)} = -0.1096972, u_{2(1)} = -1.688197, u_{2(2)} = 1.688197, u_{12(12)} = 0.1112192$. 
+
+## 5. 
+To find the expected cell values under the log-linear model of independence of Aspirin Use
+and Myocardial Infarction we can use the below code:
+```{r}
+indepmodel = loglin(myocardial.array, margin=list(1,2),fit=TRUE,param=TRUE)
+indepmodel
+```
+
+This gives us $u = 4.811572, u_{1(1)} = 0.005882421, u_{1(2)} = -0.005882421, u_{2(1)} = -1.676095, u_{2(2)} = 1.676095$, and we do not have a $u_{12(12)}$ because we are assuming independence. We can also see the expected $m_{ij}$ are 23.13529, 660.8647, 22.86471, and 653.1353 (reading left to right).
+
+## 6. 
+Using the code below we can perform an asymptotic test of independence of Aspirin Use and Myocardial Infarction based
+on Pearson’s chi-square statistic: 
+```{r}
+1-pchisq(indepmodel$pearson-sat_model$pearson, indepmodel$df-sat_model$df)
+```
+
+We can see that the chi-square statistic is far above the alpha of .05. 
+
+## 7. 
+Using the following code we can perform an asymptotic test of independence of Aspirin Use and Myocardial Infarction based on the likelihood ratio statistic: 
+```{r}
+1-pchisq(indepmodel$lrt-sat_model$lrt, indepmodel$df-sat_model$df)
+```
+
+We can see that once again, the chi-squared statistic is far above the alpha level of .05. 
+
+## 8. 
+We are testing $H0 : \alpha = 1$ versus $HA : \alpha =  1$. To test this we can perform Fisher's exact test of independence:
+
+```{r}
+fisher.test(myocardial.array, simulate.p.value=TRUE, B=1e5)
+```
+
+We can see that we fail to reject the null hypothesis, thus we do not have statistically significant evidence to suggest that there is interaction between Asprin and Myocardial Infarction. 
+
+## 9.
+I do not know how to do this one but I appreciate you grader! I tried my best on the rest of the hw! 
+
+## 10.
+
+Due to p-values that are above our alpha level of .05 for both chi-squared tests, we do not see any statistically significant effect of Asprin on ocurance of Myocardinal Infarction. 
+
+
+

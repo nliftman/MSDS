@@ -1,0 +1,59 @@
+---
+title: "DATA 556: Regression for multinomial outcomes"
+author: "Adrian Dobra (adobra@uw.edu)"
+date: ""
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analysis of Alligator Food data
+
+
+```{r, echo=TRUE, fig.width=10, fig.height=6}
+data <- read.table("alligatorfood-data.txt",header=TRUE)
+attach(data)
+
+#we need this library for the 'multinom' function
+library(nnet)
+
+y = cbind(Fish,Invertebrate,Reptile,Bird,Other)
+
+
+(M1 = multinom(y ~ 1))
+summary(M1)
+BIC(M1)
+
+(M2 = multinom(y ~ Lake))
+summary(M2)
+BIC(M2)
+
+(M3 = multinom(y ~ Gender))
+summary(M3)
+BIC(M3)
+
+(M4 = multinom(y ~ Size))
+summary(M4)
+BIC(M4)
+
+(M5 = multinom(y ~ Lake + Gender))
+summary(M5)
+BIC(M5)
+
+(M6 = multinom(y ~ Lake + Size))
+summary(M6)
+BIC(M6)
+
+(M7 = multinom(y ~ Gender + Size))
+summary(M7)
+BIC(M7)
+
+(M8 = multinom(y ~ Lake+Gender+Size))
+summary(M8)
+BIC(M8)
+
+#LRT
+1-pchisq(M7$deviance-M8$deviance,length(coef(M8))-length(coef(M7)))
+```

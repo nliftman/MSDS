@@ -1,0 +1,920 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={HW 6},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{HW 6}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\section{Problem 1 The Mental Impairment
+Data}\label{problem-1-the-mental-impairment-data}
+
+(See Datasets and Code on the course website) come from a study of
+mental health for a random sample of adult residents of Alachua County,
+FL. It relates mental impairment to life events and socioeconomic status
+(SES). The outcome (mental impairment) is an ordinal variable with four
+levels: well, mild, moderate and impaired. Life events is a count
+variable indicating the number of important live events (e.g., new job,
+divorce, death in family) that occurred to the subject within the last
+three years. SES is a binary variable with 1 = high and 0 = low.
+
+\subsection{PART A.}\label{part-a.}
+
+Disregard the natural ordering of mental impairment levels and fit a
+multinomial model that involves both independent variables ``economic
+status'' and ``life events'' using the function multinom. Per- form a
+likelihood ratio test to determine whether any of these two variables
+can be deleted from the model. Choose one model and determine the
+probability of being well, mild, moderate or impaired for John who has a
+low economic status and had seven important life events.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#first do not take into consideration the order}
+\FunctionTok{library}\NormalTok{(nnet)}
+\FunctionTok{library}\NormalTok{(lmtest)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'lmtest' was built under R version 4.3.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'zoo' was built under R version 4.3.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"mentalimpairment{-}data.txt"}\NormalTok{,}\AttributeTok{header=}\ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{attach}\NormalTok{(data)}
+\CommentTok{\#multinomial model with nothing in it }
+\NormalTok{(}\AttributeTok{M0 =} \FunctionTok{multinom}\NormalTok{(Impairment }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  8 (3 variable)
+## initial  value 55.451774 
+## final  value 54.521026 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = Impairment ~ 1)
+## 
+## Coefficients:
+##          (Intercept)
+## Mild       0.2876842
+## Moderate  -0.2513121
+## Well       0.2876842
+## 
+## Residual Deviance: 109.0421 
+## AIC: 115.0421
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#with economic status}
+\NormalTok{(}\AttributeTok{Ms =} \FunctionTok{multinom}\NormalTok{(Impairment }\SpecialCharTok{\textasciitilde{}}\NormalTok{ SES))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  12 (6 variable)
+## initial  value 55.451774 
+## final  value 52.642355 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = Impairment ~ SES)
+## 
+## Coefficients:
+##            (Intercept)        SES
+## Mild     -2.231483e-01  0.9163037
+## Moderate -8.032857e-06 -0.6931261
+## Well     -2.231480e-01  0.9163039
+## 
+## Residual Deviance: 105.2847 
+## AIC: 117.2847
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#with life events}
+\NormalTok{(}\AttributeTok{Me =} \FunctionTok{multinom}\NormalTok{(Impairment }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Events))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  12 (6 variable)
+## initial  value 55.451774 
+## iter  10 value 50.908223
+## final  value 50.908198 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = Impairment ~ Events)
+## 
+## Coefficients:
+##          (Intercept)     Events
+## Mild        1.673461 -0.2673717
+## Moderate    1.202394 -0.2835592
+## Well        2.453627 -0.4847294
+## 
+## Residual Deviance: 101.8164 
+## AIC: 113.8164
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#both life events and economic status }
+\NormalTok{(}\AttributeTok{M =} \FunctionTok{multinom}\NormalTok{(Impairment }\SpecialCharTok{\textasciitilde{}}\NormalTok{ SES }\SpecialCharTok{+}\NormalTok{ Events))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  16 (9 variable)
+## initial  value 55.451774 
+## iter  10 value 48.350248
+## final  value 48.349131 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = Impairment ~ SES + Events)
+## 
+## Coefficients:
+##          (Intercept)        SES     Events
+## Mild        1.247474  1.3575833 -0.3316398
+## Moderate    1.240500 -0.3374756 -0.2671694
+## Well        1.902708  1.6062981 -0.5601850
+## 
+## Residual Deviance: 96.69826 
+## AIC: 114.6983
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(M)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = Impairment ~ SES + Events)
+## 
+## Coefficients:
+##          (Intercept)        SES     Events
+## Mild        1.247474  1.3575833 -0.3316398
+## Moderate    1.240500 -0.3374756 -0.2671694
+## Well        1.902708  1.6062981 -0.5601850
+## 
+## Std. Errors:
+##          (Intercept)      SES    Events
+## Mild        1.104013 1.014488 0.1925961
+## Moderate    1.154363 1.135453 0.2073255
+## Well        1.110767 1.080474 0.2190439
+## 
+## Residual Deviance: 96.69826 
+## AIC: 114.6983
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# perform a likeliehood test }
+\FunctionTok{lrtest}\NormalTok{(M0, Me, Ms, M)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Likelihood ratio test
+## 
+## Model 1: Impairment ~ 1
+## Model 2: Impairment ~ Events
+## Model 3: Impairment ~ SES
+## Model 4: Impairment ~ SES + Events
+##   #Df  LogLik Df  Chisq Pr(>Chisq)    
+## 1   3 -54.521                         
+## 2   6 -50.908  3 7.2257    0.06504 .  
+## 3   6 -52.642  0 3.4683    < 2e-16 ***
+## 4   9 -48.349  3 8.5864    0.03533 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+What we can see based on our likelihood ratio test is that only model
+three and four are statistically significant (with a p-value below .05).
+What this means is that we have no statistically significant evidence to
+suggest that the model with only \(Events\) in it, is better at
+predicting \(Impairment\) than an empty model. What this also means is
+that we have statistically significant proof that the model with \(SES\)
+and the model with both \(SES\) and \(Events\) are better at predicting
+the \(Imparment\) than an empty model. We also know that a likelihood
+ratio test is not the only way to check the validity of each model.
+While we can now only look at model 3 and 4 we can check their BIC and
+AIC scores.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#bic for each of our models}
+\FunctionTok{BIC}\NormalTok{(Ms)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 127.418
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{BIC}\NormalTok{(M)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 129.8982
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#AIC for each of our models}
+\FunctionTok{AIC}\NormalTok{(Ms)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 117.2847
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{AIC}\NormalTok{(M)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 114.6983
+\end{verbatim}
+
+We can see that the lower BIC score is the model with only \(SES\) in
+it, but the lower AIC score is the model with both \(SES\) and
+\(Events\). Since this does not help us narrow down our target model, we
+will go with the model that passes the likelihood ratio test at the .01
+alpha level as well as the .05 alpha level which is the model with only
+\(SES\) in it.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Ms}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = Impairment ~ SES)
+## 
+## Coefficients:
+##            (Intercept)        SES
+## Mild     -2.231483e-01  0.9163037
+## Moderate -8.032857e-06 -0.6931261
+## Well     -2.231480e-01  0.9163039
+## 
+## Residual Deviance: 105.2847 
+## AIC: 117.2847
+\end{verbatim}
+
+Now that we have chosen our model we can look at the probability of
+John's impairment based on his low economic status and seven important
+life events. Since we chose the model with only \(SES\) we do not need
+to know how many life events, so we are only going on the low \(SES\).
+Our first equation is: log(P(y = mild\textbar SES)/P(y =
+imp\textbar SES)) = -0.233 + .916(SEC); however John having a low
+\(SES\) corresponds with our \(SES\) = 0, so log(P(y =
+mild\textbar SES)/P(y = imp\textbar SES)) = -0.233. We can do the same
+for the other impairment outcomes: log(P(y = moderate\textbar SES)/P(y =
+imp\textbar SES)) \textasciitilde= 0. log(P(y=well\textbar SES)/P(y =
+imp\textbar SES)) = -0.231.
+
+\subsection{PART B.}\label{part-b.}
+
+Answer the same questions, but this time take into consideration the
+ordering of the mental im- pairment levels.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#now take the order into account}
+\FunctionTok{library}\NormalTok{(MASS)}
+\CommentTok{\#ordering impairment}
+\NormalTok{Impairment }\OtherTok{=} \FunctionTok{factor}\NormalTok{(Impairment,}\AttributeTok{levels=}\FunctionTok{c}\NormalTok{(}\StringTok{"Well"}\NormalTok{,}\StringTok{"Mild"}\NormalTok{,}\StringTok{"Moderate"}\NormalTok{,}\StringTok{"Impaired"}\NormalTok{))}
+\CommentTok{\#order and fit the empty model}
+\NormalTok{(}\AttributeTok{orderM0 =} \FunctionTok{polr}\NormalTok{(Impairment }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## polr(formula = Impairment ~ 1)
+## 
+## No coefficients
+## 
+## Intercepts:
+##         Well|Mild     Mild|Moderate Moderate|Impaired 
+##        -0.8472977         0.4054527         1.2367503 
+## 
+## Residual Deviance: 109.0421 
+## AIC: 115.0421
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model with SES}
+\NormalTok{(}\AttributeTok{orderMs =} \FunctionTok{polr}\NormalTok{(Impairment }\SpecialCharTok{\textasciitilde{}}\NormalTok{ SES))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## polr(formula = Impairment ~ SES)
+## 
+## Coefficients:
+##        SES 
+## -0.8553378 
+## 
+## Intercepts:
+##         Well|Mild     Mild|Moderate Moderate|Impaired 
+##       -1.36376017       -0.04172851        0.83061097 
+## 
+## Residual Deviance: 106.8744 
+## AIC: 114.8744
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model with events}
+\NormalTok{(}\AttributeTok{orderMe =} \FunctionTok{polr}\NormalTok{(Impairment }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Events))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## polr(formula = Impairment ~ Events)
+## 
+## Coefficients:
+##  Events 
+## 0.28793 
+## 
+## Intercepts:
+##         Well|Mild     Mild|Moderate Moderate|Impaired 
+##         0.2614334         1.6562752         2.5876265 
+## 
+## Residual Deviance: 102.5271 
+## AIC: 110.5271
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model with ses and events}
+\NormalTok{(}\AttributeTok{orderM =} \FunctionTok{polr}\NormalTok{(Impairment }\SpecialCharTok{\textasciitilde{}}\NormalTok{ SES }\SpecialCharTok{+}\NormalTok{ Events))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## polr(formula = Impairment ~ SES + Events)
+## 
+## Coefficients:
+##        SES     Events 
+## -1.1112310  0.3188613 
+## 
+## Intercepts:
+##         Well|Mild     Mild|Moderate Moderate|Impaired 
+##        -0.2819031         1.2127926         2.2093721 
+## 
+## Residual Deviance: 99.0979 
+## AIC: 109.0979
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#perform likelihood test}
+\FunctionTok{lrtest}\NormalTok{(orderM0, orderMe, orderMs, orderM)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Likelihood ratio test
+## 
+## Model 1: Impairment ~ 1
+## Model 2: Impairment ~ Events
+## Model 3: Impairment ~ SES
+## Model 4: Impairment ~ SES + Events
+##   #Df  LogLik Df  Chisq Pr(>Chisq)    
+## 1   3 -54.521                         
+## 2   4 -51.264  1 6.5150   0.010697 *  
+## 3   4 -53.437  0 4.3473  < 2.2e-16 ***
+## 4   5 -49.549  1 7.7765   0.005293 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+What we can see based on our likelihood ratio test is that all of our
+models have a p-value below our alpha level, which means that they are
+all statistically significant in explaining impairment. So we need to
+look at AIC and BIC:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{AIC}\NormalTok{(orderM0)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 115.0421
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{AIC}\NormalTok{(orderMe)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 110.5271
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{AIC}\NormalTok{(orderMs)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 114.8744
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{AIC}\NormalTok{(orderM)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 109.0979
+\end{verbatim}
+
+We can see that the lowest AIC is the model with both variables
+included. Now to look at BIC:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{BIC}\NormalTok{(orderM0)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 120.1087
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{BIC}\NormalTok{(orderMe)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 117.2826
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{AIC}\NormalTok{(orderMs)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 114.8744
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{AIC}\NormalTok{(orderM)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 109.0979
+\end{verbatim}
+
+And once again we can see that the lowest BIC is the model with both
+variables. So that is the model we will use to judge the probability of
+John's level of impairment.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{orderM}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## polr(formula = Impairment ~ SES + Events)
+## 
+## Coefficients:
+##        SES     Events 
+## -1.1112310  0.3188613 
+## 
+## Intercepts:
+##         Well|Mild     Mild|Moderate Moderate|Impaired 
+##        -0.2819031         1.2127926         2.2093721 
+## 
+## Residual Deviance: 99.0979 
+## AIC: 109.0979
+\end{verbatim}
+
+Again we know our SES is 0 because John is low income, so we can
+completely remove that from the formulas. Our first equation is: log(P(y
+= mild\textbar SES)/P(y = well\textbar SES)) = .318(7) - 0.281. log(P(y
+= moderate\textbar SES)/P(y = mild\textbar SES)) = .318(7) + 1.213
+log(P(y=imp\textbar SES)/P(y = mod\textbar SES)) = .318(7) + 2.209
+
+\section{Problem 2}\label{problem-2}
+
+The Alligator Food Choice Data (See Datasets and Code on the course
+website) come from a study of factors influencing the primary food
+choice of alligators. The study comprised 219 alligators captured in
+four Florida lakes. There are five categories of food choices: fish,
+invertebrate, reptile, bird and other. The alligators were classified
+according to L = lake of capture (Hancock, Oklawaha, Trafford, George),
+G = gender (male, female), and S = size (≤ 2.3 meters, \textgreater{}
+2.3 meters long). Discuss which factors seem to influence alligators'
+food choice by fitting appropriate multinomial models. According to your
+model, what is the probability that a male alligator from Lake Trafford
+that is 3 meters long prefers reptiles for dinner?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#load in the data}
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"alligatorfood{-}data.txt"}\NormalTok{,}\AttributeTok{header=}\ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{attach}\NormalTok{(data)}
+\CommentTok{\#cbind}
+\NormalTok{y }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(Fish,Invertebrate,Reptile,Bird,Other)}
+\CommentTok{\#empty model}
+\NormalTok{(}\AttributeTok{M1 =} \FunctionTok{multinom}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  10 (4 variable)
+## initial  value 352.466903 
+## final  value 302.181462 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = y ~ 1)
+## 
+## Coefficients:
+##              (Intercept)
+## Invertebrate  -0.4324211
+## Reptile       -1.5988558
+## Bird          -1.9783458
+## Other         -1.0775589
+## 
+## Residual Deviance: 604.3629 
+## AIC: 612.3629
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model based on lake}
+\NormalTok{(}\AttributeTok{M2 =} \FunctionTok{multinom}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Lake))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  25 (16 variable)
+## initial  value 352.466903 
+## iter  10 value 281.030560
+## iter  20 value 280.583926
+## final  value 280.583844 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = y ~ Lake)
+## 
+## Coefficients:
+##              (Intercept) LakeHancock LakeOklawaha LakeTrafford
+## Invertebrate  -0.5008393  -1.5137909   0.55488981    0.8263598
+## Reptile       -3.4962205   1.1937161   2.55175319    3.0107928
+## Bird          -2.3982809   0.6065505  -0.49188808    1.2197770
+## Other         -1.7048477   0.8686390  -0.08689071    1.4425750
+## 
+## Residual Deviance: 561.1677 
+## AIC: 593.1677
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model based on gender}
+\NormalTok{(}\AttributeTok{M3 =} \FunctionTok{multinom}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Gender))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  15 (8 variable)
+## initial  value 352.466903 
+## iter  10 value 301.192714
+## final  value 301.129428 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = y ~ Gender)
+## 
+## Coefficients:
+##              (Intercept) GenderMale
+## Invertebrate  -0.2231478 -0.3578812
+## Reptile       -1.7635569  0.2509570
+## Bird          -1.7635851 -0.3680370
+## Other         -0.9162928 -0.2708745
+## 
+## Residual Deviance: 602.2589 
+## AIC: 618.2589
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model based on size}
+\NormalTok{(}\AttributeTok{M4 =} \FunctionTok{multinom}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Size))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  15 (8 variable)
+## initial  value 352.466903 
+## iter  10 value 294.689203
+## final  value 294.606678 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = y ~ Size)
+## 
+## Coefficients:
+##              (Intercept)       Size
+## Invertebrate -0.08515712 -0.9489002
+## Reptile      -2.10000556  0.8582954
+## Bird         -2.28237308  0.5551345
+## Other        -0.94734781 -0.2943686
+## 
+## Residual Deviance: 589.2134 
+## AIC: 605.2134
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model based on lake and gender}
+\NormalTok{(}\AttributeTok{M5 =} \FunctionTok{multinom}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Lake }\SpecialCharTok{+}\NormalTok{ Gender))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  30 (20 variable)
+## initial  value 352.466903 
+## iter  10 value 279.421076
+## iter  20 value 277.733691
+## final  value 277.732884 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = y ~ Lake + Gender)
+## 
+## Coefficients:
+##              (Intercept) LakeHancock LakeOklawaha LakeTrafford GenderMale
+## Invertebrate  0.01048504  -1.7605713   0.59314476    0.9609816 -0.8577619
+## Reptile      -3.37256725   1.1400408   2.55949903    3.0361432 -0.1834060
+## Bird         -2.12320607   0.4818741  -0.47393004    1.2811363 -0.4245404
+## Other        -1.51431307   0.7842964  -0.07500933    1.4829188 -0.2871253
+## 
+## Residual Deviance: 555.4658 
+## AIC: 595.4658
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model based on lake and size}
+\NormalTok{(}\AttributeTok{M6 =} \FunctionTok{multinom}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Lake }\SpecialCharTok{+}\NormalTok{ Size))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  30 (20 variable)
+## initial  value 352.466903 
+## iter  10 value 270.844027
+## iter  20 value 270.041364
+## final  value 270.040140 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = y ~ Lake + Size)
+## 
+## Coefficients:
+##              (Intercept) LakeHancock LakeOklawaha LakeTrafford       Size
+## Invertebrate -0.09083394  -1.6583241  0.937163858     1.121984 -1.4581521
+## Reptile      -3.66588368   1.2431622  2.458817408     2.935296  0.3513836
+## Bird         -2.72380722   0.6952142 -0.653348590     1.087850  0.6307298
+## Other        -1.57283851   0.8262891  0.005522604     1.516419 -0.3313740
+## 
+## Residual Deviance: 540.0803 
+## AIC: 580.0803
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model based on gender and size}
+\NormalTok{(}\AttributeTok{M7 =} \FunctionTok{multinom}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Gender }\SpecialCharTok{+}\NormalTok{ Size))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  20 (12 variable)
+## initial  value 352.466903 
+## iter  10 value 294.854746
+## final  value 294.091727 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = y ~ Gender + Size)
+## 
+## Coefficients:
+##              (Intercept)  GenderMale       Size
+## Invertebrate -0.04280353 -0.09004186 -0.9211347
+## Reptile      -2.08500394 -0.03135665  0.8677287
+## Bird         -2.03235739 -0.61461112  0.7532196
+## Other        -0.85769580 -0.19616474 -0.2331107
+## 
+## Residual Deviance: 588.1835 
+## AIC: 612.1835
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#model based on all three}
+\NormalTok{(}\AttributeTok{M8 =} \FunctionTok{multinom}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Lake}\SpecialCharTok{+}\NormalTok{Gender}\SpecialCharTok{+}\NormalTok{Size))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  35 (24 variable)
+## initial  value 352.466903 
+## iter  10 value 271.274792
+## iter  20 value 268.935538
+## final  value 268.932740 
+## converged
+\end{verbatim}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = y ~ Lake + Gender + Size)
+## 
+## Coefficients:
+##              (Intercept) LakeHancock LakeOklawaha LakeTrafford GenderMale
+## Invertebrate   0.1690702  -1.7805555   0.91304120     1.155722 -0.4629388
+## Reptile       -3.4161432   1.1296426   2.53024945     3.061087 -0.6276217
+## Bird          -2.4321397   0.5754699  -0.55020075     1.237216 -0.6064035
+## Other         -1.4309095   0.7667093   0.02603021     1.557820 -0.2524299
+##                    Size
+## Invertebrate -1.3361658
+## Reptile       0.5571846
+## Bird          0.7300740
+## Other        -0.2905697
+## 
+## Residual Deviance: 537.8655 
+## AIC: 585.8655
+\end{verbatim}
+
+\end{document}

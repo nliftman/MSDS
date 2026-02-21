@@ -6,4 +6,173 @@ output: pdf_document
 ---
 
 ## Part A
+### 1. REDO!!!
+```{r warning = FALSE, error = FALSE, message = FALSE}
+library(tidyverse)
+library(ggplot2)
+library(lmtest)
+library(sandwich)
+housing <- read_csv("kc_house_data1000.csv")
+housing_small <- housing %>% 
+  select(price, bedrooms, bathrooms, sqft_living, sqft_lot)
+cor(housing_small, method = "pearson", use = "complete.obs")
+```
+
+Calculate pairwise correlations between price, bedrooms, bathrooms, sqft_living, and sqft_lot. You
+don’t need to visualize them, but if you’d like to, you might like this cool R package: https://cran.rproject.org/web/packages/corrplot/vignettes/corrplot-intro.html
+
+### 2.
+```{r}
+ggplot(data = housing) +
+  geom_point(aes(x = sqft_living, y= price, alpha = .5)) +
+  labs(title = "Scatterplot of Price Versus the Sqft of Living Space", alpha = "Alpha") +
+  xlab("Sqft of Living Space") +
+  ylab("Price")
+```
+
+There appears to be a positive (but not extremely) association but it does not appear to be perfectly linear. 
+
+### 3.
+```{r}
+model1 <- lm(price~sqft_living, data = housing)
+summary(model1)
+```
+
+We get an estimated intercept of -5527.261 and an estimated coefficient on the area variable of 260.812. 
+
+### 4.
+
+Our model found created this equation: 
+E[`price`|`sqft_living`] = -5527.261 + 260.812*(`sqft_living`)
+
+### 5. 
+
+In the context of this problem the intercept means that for a house of zero square feet large we would expect it to sell for -5527.261 dollars. This does not make a lot of sense in the real world, and is a sign that extrapolating outside of the data can be dangerous. We also have a slope variable and in the context of this problem it means that for every single square foot living increase our model expects the price to increase by 260.812 dollars. 
+
+## Part B.
+### 1. 
+
+```{r}
+model2 <- lm(price~sqft_living + sqft_lot, data = housing)
+summary(model2)
+```
+260.812 is the estimated slope for `sqft_living` in our first model and 272.008 is our estimated slope for `sqft_living` in our second model. So we can see that the slope has increased slightly.
+
+### 2. 
+
+The slope variable for `sqft_living` in the context of this problem means that for every single square foot living increase our model expects the price to increase by 272.008 dollars while holding the `sqft_lot` constant. 
+### 3. 
+
+The $R^2$ for our first model is 0.4178 and for our second model is 0.4395. We can see it slightly increases when we add another variable because the addition allows the model to be more flexible. So our model with more variables can capture not only the underlying relationship between living and price, but also any random noise in the model. It is also true that for any finite sample (if $R^2$ is not already 1) then a small part of the remaining variation can be explained by adding more variables. 
+
+### 4. 
+
+The residual standard errors are 235100 on 998 degrees of freedom for our first model and 230800 on 997 degrees of freedom for our second mode. We can see that the residual standard errors have decreased when we added another variable. This makes sense because as we saw in part 3 the second model fits a larger proportion of the variation in the response. And our residual standard errors are the average squared difference between what our model predicts a value to be and the actual value. 
+
+### 5.
+
+The estimated error variance measures the average deviation squared of observed data from the predicted regression line. So in our model the average squared difference from our predicted line to the actual point is 230800 dollars.
+
+## 6. 
+
+The test-statistic for the null hypothesis that `sqft_living` is equal to zero gives us a test statistic of 27.941 on a t-distribution with 997 degrees of freedom. We then can calculate the p-value of < 2e-16.
+
+### 7. 
+```{r}
+#need to create a model with neither of them 
+restrictedmodel <- lm(price~1, data = housing)
+#and test against model with both
+anovad2 <- anova(restrictedmodel, model2)
+anovad2
+```
+
+To compute the null hypothesis that both of the coefficients are equal to zero we will use an anova test between a model with no variables and our second model. This gives us a test statistic of 390.92 on a F-distribution with df 2 and 997. This then results in a p-value of < 2.2e-16.
+
+## Part C. 
+### 1. 
+
+```{r results = 'hide'}
+model3 <- lm(price ~ sqft_living + sqft_lot + bedrooms + bathrooms, data = housing)
+coeftest(model3, vcov = vcovHC)
+summary(model3)
+```
+
+```{r}
+library(gt)
+library(gtExtras)
+#pretty table time LETS GOOOO
+names <- c("Intercept", "sqft_living", "sqft_lot", "bedrooms", "bathrooms")
+estiamtes <- c("37078.7579", "312.4365", "-21.0901", "-20711.2214", "-36550.2975")
+SE_cv <- c("32025.416", "14.457", "3.289", "9938.273", "14438.489")
+SE_robust <- c("37078.7579", "27.5792", "2.5192", "11196.4562", "14900.9337")
+
+table <- data.frame(names, estiamtes, SE_cv, SE_robust)
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    names = "",
+    estiamtes = "Estimates",
+    SE_cv = "SE Constant Variance",
+    SE_robust = "SE Robust"
+  ) %>% 
+  gt_add_divider(columns = "names") %>% 
+  gt_add_divider(columns = "estiamtes") %>% 
+  gt_add_divider(columns = "SE_cv") 
+
+gt_table
+```
+
+### 2. Assess the constant variance assumption and briefly comment on your findings
+```{r}
+ggplot(model3, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs. Fitted Value Plot") +
+  xlab("Fitted Values") +
+  ylab("Residuals") +
+  theme_bw()
+```
+
+To assess the assumption of constant variance we can create a Fitted Values vs Residuals plot. What we are looking for is there to be no clear shape between the fitted values and the residuals. However, we can clearly see that the residuals get larger as the fitted values increase. Which means that our data violates the assumption of homoskedacitity. 
+
+
+### 3. 
+
+To test that the coefficient for bedrooms is equal to zero in model 3 we get a test statistic of -2.084 on a t-distribution with df = 995. We also get a p-value of 0.0374. When we test for the bedroom's coefficient equal to 0 using the robust standard errors we get a test statistic of -1.8498 on a t-distribution with 995 degrees of freedom. We then get a p-value of 0.06464 from this. 
+
+### 4.
+
+```{r}
+n <- 1000
+betajack <- rep(0, 1000)
+for (i in 1:n){
+  lmjack <- lm(price ~ sqft_living + sqft_lot + bedrooms + bathrooms, data = housing, subset = -i)
+  betajack[i] <- lmjack$coefficients[4]
+}
+varhat <- (n-1)/n*sum((betajack-mean(betajack))^2) # this is the standard error function 
+sdhat <- sqrt(varhat) 
+sdhat
+```
+
+The jackknife estimate of the standard deviation is 11190.86. 
+
+### 5. Use the jackknife estimate of the standard deviation to test the null hypothesis that the coefficient of the bedrooms variable is equal to 0. Report the test statistic and p-value
+
+```{r}
+#means 
+meanjack <- mean(betajack)
+#H0 is that its equal to zero
+#so its just mean/se
+teststat <- meanjack/sdhat
+#now get the p-value
+p_value = 2 * pt(abs(teststat), df = n - 1, lower.tail = FALSE)
+```
+
+We get a test statistic of -1.85072 which is on a t-distribution with 999 degrees of freedom. We can then get a p-value from this of 0.0645. 
+
+### 6. Comment on your results from Questions 3 and 5 (of Part C).
+
+What is interesting is that our jackknife result and our robust SE result gave very similar p-values. And what we found was that (in each of those settings) at the alpha level 0.05 we would fail to reject the null hypothesis that the bedrooms variable is equal to zero. However, what we found when we did not use the jackknife and did not adjust for the fact that we violated the homoskedacitity requirement, we rejected the null hypothesis. So it highlights the importance of recognizing when we have violated assumptions and adjusting our methods accordingly or else we may conclude something incorrect. 
+
 

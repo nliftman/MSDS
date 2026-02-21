@@ -1,0 +1,9 @@
+---
+title: "Mini Project 3"
+author: "Naomi Liftman"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+## Part A
+

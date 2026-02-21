@@ -1,5 +1,5 @@
 ---
-title: "MiniProj2"
+title: "Mini Project 2"
 author: "Naomi Liftman"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -75,7 +75,7 @@ We will be performing a Welch t-test for difference in two means. We will be usi
 
 #### c. 
 
-The distribution of the test statistic is a t-distribution (the df are slightly different for a Welch test, but R automatically calculates these).
+The distribution of the test statistic is a t-distribution (the df are slightly different for a Welch test, but R automatically calculates these and gets 41.093 for this model).
 
 #### d. 
 
@@ -172,7 +172,7 @@ ggplot(data = mean_dif) +
 
 #### b. 
 
-I calculated a p-value of 0.014. 
+I calculated a one sided p-value of 0.014. 
 ```{r}
 mean_dif %>% 
   count(diff > 11.831)
@@ -180,7 +180,7 @@ mean_dif %>%
 ```
 
 #### c. 
-Using the significance level of 5%, we conclude that we reject the null hypothesis. In this context it means that we have evidence suggest that there is a difference in average standardized price values between diamonds of 0.99 carat and diamonds of 1.0 carats.  
+Using the significance level of 5%, we conclude that we reject the null hypothesis. In this context it means that we have evidence suggest that the average standardized price values of diamonds 0.99 carats is smaller than diamonds of 1.0 carats.  
 
 ### Question 2
 #### a. 

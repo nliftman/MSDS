@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 ## Part A
-### 1. REDO!!!
+### 1. 
 ```{r warning = FALSE, error = FALSE, message = FALSE}
 library(tidyverse)
 library(ggplot2)
@@ -18,9 +18,6 @@ housing_small <- housing %>%
 cor(housing_small, method = "pearson", use = "complete.obs")
 ```
 
-Calculate pairwise correlations between price, bedrooms, bathrooms, sqft_living, and sqft_lot. You
-don’t need to visualize them, but if you’d like to, you might like this cool R package: https://cran.rproject.org/web/packages/corrplot/vignettes/corrplot-intro.html
-
 ### 2.
 ```{r}
 ggplot(data = housing) +
@@ -30,7 +27,7 @@ ggplot(data = housing) +
   ylab("Price")
 ```
 
-There appears to be a positive (but not extremely) association but it does not appear to be perfectly linear. 
+There appears to be a positive (but not extremely) association between the square foot of living and the price. Also this association not appear to be perfectly linear (it appears to have a slight curve upwards on the right). 
 
 ### 3.
 ```{r}
@@ -47,7 +44,7 @@ E[`price`|`sqft_living`] = -5527.261 + 260.812*(`sqft_living`)
 
 ### 5. 
 
-In the context of this problem the intercept means that for a house of zero square feet large we would expect it to sell for -5527.261 dollars. This does not make a lot of sense in the real world, and is a sign that extrapolating outside of the data can be dangerous. We also have a slope variable and in the context of this problem it means that for every single square foot living increase our model expects the price to increase by 260.812 dollars. 
+In the context of this problem the intercept means that for a house of zero square feet we would expect it to sell for -5527.261 dollars. This does not make a lot of sense in the real world, and is a sign that extrapolating outside of the data can be dangerous. We also have the slope variable and in the context of this problem it means that for every single square foot living increase our model expects the price to increase by 260.812 dollars. 
 
 ## Part B.
 ### 1. 
@@ -61,13 +58,15 @@ summary(model2)
 ### 2. 
 
 The slope variable for `sqft_living` in the context of this problem means that for every single square foot living increase our model expects the price to increase by 272.008 dollars while holding the `sqft_lot` constant. 
+
 ### 3. 
 
-The $R^2$ for our first model is 0.4178 and for our second model is 0.4395. We can see it slightly increases when we add another variable because the addition allows the model to be more flexible. So our model with more variables can capture not only the underlying relationship between living and price, but also any random noise in the model. It is also true that for any finite sample (if $R^2$ is not already 1) then a small part of the remaining variation can be explained by adding more variables. 
+The $R^2$ for our first model is 0.4178 and for our second model is 0.4395. $R^2$ measures the amount of variation in our response variable that our model explains. We can see it slightly increases when we add another variable because the addition allows the model to be more flexible. So our model with more variables can capture not only the underlying relationship between living and price, but also any random noise in the model. It is also true that for any finite sample (if $R^2$ is not already 1) then a small part of the remaining variation can be explained by adding more variables. 
 
 ### 4. 
 
-The residual standard errors are 235100 on 998 degrees of freedom for our first model and 230800 on 997 degrees of freedom for our second mode. We can see that the residual standard errors have decreased when we added another variable. This makes sense because as we saw in part 3 the second model fits a larger proportion of the variation in the response. And our residual standard errors are the average squared difference between what our model predicts a value to be and the actual value. 
+The residual standard errors are 235100 on 998 degrees of freedom for our first model and 230800 on 997 degrees of freedom for our second mode. We can see that the residual standard errors have decreased when we added another variable. This makes sense because the residual standard errors are the average squared difference between what our model predicts and the actual value in our data. And in part 3 we saw that the second model fits a larger proportion of the variation in our response, which means that we would expect the average squared difference to be slightly smaller.
+
 
 ### 5.
 
@@ -75,7 +74,7 @@ The estimated error variance measures the average deviation squared of observed 
 
 ## 6. 
 
-The test-statistic for the null hypothesis that `sqft_living` is equal to zero gives us a test statistic of 27.941 on a t-distribution with 997 degrees of freedom. We then can calculate the p-value of < 2e-16.
+The test-statistic for the null hypothesis that `sqft_living` is equal to zero gives us a test statistic of 27.941 on a t-distribution with 997 degrees of freedom. We then get the p-value of < 2e-16.
 
 ### 7. 
 ```{r}
@@ -84,6 +83,8 @@ restrictedmodel <- lm(price~1, data = housing)
 #and test against model with both
 anovad2 <- anova(restrictedmodel, model2)
 anovad2
+
+
 ```
 
 To compute the null hypothesis that both of the coefficients are equal to zero we will use an anova test between a model with no variables and our second model. This gives us a test statistic of 390.92 on a F-distribution with df 2 and 997. This then results in a p-value of < 2.2e-16.
@@ -123,7 +124,7 @@ gt_table <- gt_table %>%
 gt_table
 ```
 
-### 2. Assess the constant variance assumption and briefly comment on your findings
+### 2. 
 ```{r}
 ggplot(model3, aes(x = .fitted, y = .resid)) +
   geom_point() +
@@ -157,7 +158,7 @@ sdhat
 
 The jackknife estimate of the standard deviation is 11190.86. 
 
-### 5. Use the jackknife estimate of the standard deviation to test the null hypothesis that the coefficient of the bedrooms variable is equal to 0. Report the test statistic and p-value
+### 5. 
 
 ```{r}
 #means 
@@ -171,7 +172,7 @@ p_value = 2 * pt(abs(teststat), df = n - 1, lower.tail = FALSE)
 
 We get a test statistic of -1.85072 which is on a t-distribution with 999 degrees of freedom. We can then get a p-value from this of 0.0645. 
 
-### 6. Comment on your results from Questions 3 and 5 (of Part C).
+### 6. 
 
 What is interesting is that our jackknife result and our robust SE result gave very similar p-values. And what we found was that (in each of those settings) at the alpha level 0.05 we would fail to reject the null hypothesis that the bedrooms variable is equal to zero. However, what we found when we did not use the jackknife and did not adjust for the fact that we violated the homoskedacitity requirement, we rejected the null hypothesis. So it highlights the importance of recognizing when we have violated assumptions and adjusting our methods accordingly or else we may conclude something incorrect. 
 

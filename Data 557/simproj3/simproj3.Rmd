@@ -1,0 +1,255 @@
+---
+title: "Simulation Project 3"
+output: pdf_document
+author: "Naomi Liftman"
+date: "Mar 1, 2026"
+---
+
+## 1. Plot temperature against failure. Fit a logistic regression model to this dataset and overlay the fitted model on the scatterplot.
+
+```{r echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+#libraries
+library(tidyverse)
+library(ggplot2)
+library(boot)
+
+#set a seed
+set.seed(400)
+
+#load in csv
+oring <- read_csv("https://www.openintro.org/data/csv/orings.csv")
+
+#create the failure variable
+orig <- oring %>% 
+  mutate(failure = case_when(
+    #failure = 1 when there is a failure
+    damaged > 0 ~ 1,
+    # = 0 when there is no failure
+    damaged < 1 ~ 0
+  ))
+
+#fit linear regression model
+tempmod <- glm(failure ~ temperature, data = orig, family = binomial)
+
+#graph the model (no confidence intervals)
+ggplot(data = orig, aes(x = temperature, y = failure)) +
+  geom_point(alpha = 0.5) + 
+  geom_smooth(
+    method = "glm",
+    method.args = list(family = "binomial"),
+    se = FALSE 
+  ) +
+  labs(title = "Scatterplot of O-Ring Failure Versus Temperature", x = "Temperature", y = "Failure", caption = "*line indicates fitted logistic regression model for failure given temperature") +
+  theme_bw()
+```
+
+## 2. The Challenger explosion occurred at 31 degrees. What is the predicted probability of an O-ring failure using your model? Note: This is an extrapolation is beyond the range of our data.
+
+Our logistic model is as follows: logit(p of failure) = 15.0429 - 0.2322(temperature). So to find the predicted probability of the failure given the temperature is 31 degrees we get logit(p of failure) = 7.6125. So to get the probability of failure we can take $e^{7.6125} = 2023.3301$ and get a predicted probability of 2023.3301. 
+
+# Parametric Bootstrap
+## 3. How many simulated datasets give the warning message?
+
+We got 216 warnings for our dataset of 10,000. 
+
+## 4. Create a histogram of the estimated coefficients on temperature, that is, the Beta_1’s. Comment on its shape, spread and center.
+
+![Beta1 Parametric Histogram](/Users/naomiliftman/Desktop/MSDS/Data 557/simproj3/beta1hist.png)
+We can see that the data is very skewed left. The graph is unimodal with the mode around -.25, we can see a range of -2 to 0. 
+
+## 5. Create a histogram of the standard errors. Comment on its shape, spread and center. Compare the values to the standard error obtained by taking the standard deviation of the Beta1's. 
+
+![Beta1 SE Parametric Histogram](/Users/naomiliftman/Desktop/MSDS/Data 557/simproj3/SEhist.png)
+As we can see from our histogram, the SE for our parametric bootstrapped Beta1's is shaped the opposite of our Beta1s. While it is still heavily skewed this graph is skewed right. It is still unimodal, but our mode is at around 0.10, and the graph has a range from 0 to 1. 
+
+When we get the SD for our Beta1's we get a value of 0.2201597. This is quite a bit higher than our mode SE for our Beta1's individually. 
+
+## 6. For each dataset, calculate a 90% confidence interval for Beta1. What proportion of the confidence intervals contain the true value?
+
+When we created a 90% confidence interval for each Beta1 which we collected we found that 9,772 of our 10,000 confidence intervals contained the true value of Beta1 (-0.2322). 
+
+# Non-Parametric Bootstrap
+## 7. How many simulated datasets give the warning message?
+
+We found that 4 of our simulated datasets gave us a warning.
+
+## 8. Create a histogram of the estimated coefficients on temperature, that is, the Beta1’s. Comment on its shape, spread and center.
+
+![Beta1 Non-Parametric Histogram](/Users/naomiliftman/Desktop/MSDS/Data 557/simproj3/betahist2.png)
+
+We can see that this graph appears to be a normal bell curve. We can see that the graph is unimodal, has a mode of zero, and a range of -.5 to 1 although the highest concentration of data is between -.5 and .5. 
+
+## 9. Create a histogram of the standard errors. Comment on its shape, spread and center. Compare the values to the standard error obtained by taking the standard deviation of the Beta 1's. 
+![Beta1 SE Histogram Non-Parametric](/Users/naomiliftman/Desktop/MSDS/Data 557/simproj3/SEhist2.png)
+
+
+
+We can see that the SE's for our non-parametric Beta 1 is $highly$ concentrated on .05 with a very clear mode at 0. In fact there is almost no curve or bell, it is almost entirely in the bin around .05. The range is from 0 to 0.8. 
+
+
+## 10. For each dataset, calculate a 90% confidence interval for Beta1. What proportion of the confidence intervals contain the true value?
+
+What we found is that for our 10,000 90% confidence intervals only 1240 of them contain the true Beta1.
+
+## 11. Write a short paragraph constrasting and commenting on your findings from Questions 3-10.
+
+What we found was that in the end the parametric bootstrap was far more accurate than the non-parametric when creating 90% confidence intervals. This makes sense. We know that a parametric bootstrap assumes that the data follows a specific distribution and if the data does indeed follow that distribution then the parametric bootstrap is very effective. And we know the data follows the binomial distribution because we are fitting logistic models, and their random component is indeed the binomial. 
+
+
+
+# Apendix 
+## 1. 
+```{r message = FALSE, error = FALSE, warning = FALSE}
+#libraries
+library(tidyverse)
+library(ggplot2)
+
+#load in csv
+oring <- read_csv("https://www.openintro.org/data/csv/orings.csv")
+
+#create the failure variable
+orig <- oring %>% 
+  mutate(failure = case_when(
+    #failure = 1 when there is a failure
+    damaged > 0 ~ 1,
+    # = 0 when there is no failure
+    damaged < 1 ~ 0
+  ))
+
+#fit linear regression model
+tempmod <- glm(failure ~ temperature, data = orig, family = binomial)
+
+#graph the model (no confidence intervals)
+ggplot(data = orig, aes(x = temperature, y = failure)) +
+  geom_point(alpha = 0.5) + 
+  geom_smooth(
+    method = "glm",
+    method.args = list(family = "binomial"),
+    se = FALSE 
+  ) +
+  labs(title = "Scatterplot of O-Ring Failure Versus Temperature", x = "Temperature", y = "Failure", caption = "*line indicates fitted logistic regression model for failure given temperature") +
+  theme_bw()
+```
+
+## 2. 
+```{r}
+summary(tempmod)
+15.0429 - (0.2322*(32))
+```
+
+## 3. 
+```{r}
+B <- 10000
+se_beta1 <- c(1:B)
+boot_beta1 <- c(1:B)
+conf <- data.frame(lower = NA, upper = NA)
+count = 0
+for(i in 1:B){
+  predict_p <- predict.glm(tempmod, data = orig, type = "response")
+  new_y <- rbinom(n = 23, size = 1, prob = predict_p)
+  orig$new_y = new_y
+  tryCatch({new_mod <- glm(new_y~temperature, data = orig, family = binomial)},
+         warning = function(msg){
+           count <<- count + 1 
+         }
+  )
+  se_beta1[i] <- summary(new_mod)$coefficients[2, 2]
+  boot_beta1[i] <- coef(new_mod)[2]
+}
+```
+
+## 4. 
+```{r}
+bootsdata <- data.frame(boot_beta1, se_beta1)
+ggplot(data = bootsdata) +
+  geom_histogram(aes(x = boot_beta1)) +
+  labs(title = "Histogram of Beta1's from the Parametric Bootstraps", x = "Beta 1", y = "Count") +
+  theme_bw()
+```
+
+## 5. 
+```{r}
+bootsdata <- data.frame(boot_beta1, se_beta1)
+ggplot(data = bootsdata) +
+  geom_histogram(aes(x = se_beta1)) +
+  labs(title = "Histogram of SE's from the Parametric Bootstraps", x = "SE for Beta 1", y = "Count") +
+  theme_bw()
+```
+
+## 6. 
+```{r}
+#there are 22 df so t is 1.717
+for(i in 1:B){
+  conf[i,1] <- boot_beta1[i] - 2.074*se_beta1[i]
+  conf[i,2] <- boot_beta1[i] + 2.074*se_beta1[i]
+}
+#true value is -0.2322
+value = -0.2322
+for(i in 1:B){
+  conf$is_between[i] <- (value >= conf$lower[i]) & (value <= conf$upper[i])
+}
+#count
+conf %>% 
+  group_by(is_between) %>% 
+  count(is_between)
+```
+
+## 7.
+```{r}
+B <- 10000
+se_beta1_non <- c(1:B)
+boot_beta1_non <- c(1:B)
+conf_non <- data.frame(lower = NA, upper = NA)
+count = 0
+orig_2 <- orig %>% 
+  select(temperature, failure)
+for(i in 1:B){
+  temp_resample <- sample(orig_2$failure, replace = T)
+  full <- cbind(temp_resample, orig_2)
+  tryCatch({new_mod_non <- glm(temp_resample~temperature, data = orig_2, family = binomial)},
+         warning = function(msg){
+           count <<- count + 1 
+         }
+  )
+  se_beta1_non[i] <- summary(new_mod_non)$coefficients[2, 2]
+  boot_beta1_non[i] <- coef(new_mod_non)[2]
+}
+```
+
+## 8.
+```{r}
+bootsdata_non <- data.frame(boot_beta1_non, se_beta1_non)
+boots <- bootsdata_non %>% 
+  filter(se_beta1_non < 2)
+ggplot(data = boots) +
+  geom_histogram(aes(x = boot_beta1_non)) +
+  labs(title = "Histogram of Beta1's from the Non-Parametric Bootstraps", x = "Beta 1", y = "Count") +
+  theme_bw()
+```
+
+## 9. 
+```{r}
+ggplot(data = boots) +
+  geom_histogram(aes(x = se_beta1_non)) +
+  labs(title = "Histogram of SE's from the Non-Parametric Bootstraps", x = "SE for Beta 1", y = "Count") +
+  theme_bw()
+```
+
+## 10.
+```{r}
+#there are 22 df so t is 1.717
+for(i in 1:B){
+  conf[i,1] <- boot_beta1_non[i] - 2.074*se_beta1_non[i]
+  conf[i,2] <- boot_beta1_non[i] + 2.074*se_beta1_non[i]
+}
+#true value is -0.2322
+value = -0.2322
+for(i in 1:B){
+  conf$is_between[i] <- (value >= conf$lower[i]) & (value <= conf$upper[i])
+}
+#count
+conf %>% 
+  group_by(is_between) %>% 
+  count(is_between)
+```
+

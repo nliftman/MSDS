@@ -1,0 +1,66 @@
+---
+title: "final"
+output: html_document
+---
+Libraries
+```{r warning = FALSE, message = FALSE, error = FALSE}
+#libraries
+library(rio)
+library(tidyverse)
+library(ggplot2)
+```
+Cleaning 
+```{r}
+#load data 
+salary <- import('/Users/naomiliftman/Desktop/MSDS/Data 557/Final Project/salary.txt')
+
+#check if there are any na's
+sum(is.na(as.matrix(salary)))
+#there are 4 
+
+#get the rows so we can have a look at them 
+rows_with_na <- salary[apply(
+  salary, 
+  1, 
+  function(x) any(is.na(x))
+  ), ]
+#we can see that there are 4 NAs in the 'Rank' Category
+#three of these 4 cases refer to the same faculty member (ID-417)
+#the other is again a male faculty member (ID-1574)
+
+#removing the NAs
+salary_removed <- salary %>% 
+  drop_na()
+```
+
+Inflation 
+```{r}
+#year goes from 76 through 95
+#turning everything into 2026 dollars
+salary_inflation <- salary_removed %>% 
+  mutate(inflated_salary = case_when(
+      year == 76 ~ salary*5.70,
+      year == 77 ~ salary*5.35,
+      year == 78 ~ salary*4.97,
+      year == 79 ~ salary*4.47,
+      year == 80 ~ salary*3.93,
+      year == 81 ~ salary*3.56,
+      year == 82 ~ salary*3.36,
+      year == 83 ~ salary*3.25,
+      year == 84 ~ salary*3.12,
+      year == 85 ~ salary*3.01,
+      year == 86 ~ salary*2.96,
+      year == 87 ~ salary*2.85,
+      year == 88 ~ salary*2.74,
+      year == 89 ~ salary*2.61,
+      year == 90 ~ salary*2.48,
+      year == 91 ~ salary*2.38,
+      year == 92 ~ salary*2.31,
+      year == 93 ~ salary*2.24,
+      year == 94 ~ salary*2.19,
+      year == 95 ~ salary*2.13
+    ))
+
+
+```
+

@@ -1,0 +1,134 @@
+---
+title: "Lab 8"
+author: "DATA 557"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Set-up
+
+Osteoporosis is a disease wherein reduced bone mineral density can result in increased bone fragility and elevated risk of bone fractures.
+
+In this lab, we'll investigate risk factors for bone fractures using the Global Longitudinal Study of Osteoporosis in Women (GLOW). More information on the data can be found here: https://search.r-project.org/CRAN/refmans/aplore3/html/glow500.html
+
+```{r}
+glow <- read.csv("https://www.dropbox.com/s/8a4j0yjjaaqv6gu/glow500.csv?dl=1")
+```
+
+For the first set of questions, the variables we will use are:
+
+- `fracture`: Any fracture in first year (1: No, 2: Yes)
+- `age`: Age at Enrollment (Years)
+
+```{r}
+glow$event <- ifelse(glow$fracture == "Yes", 1, 0)
+```
+
+## 1. Compare the proportions of individuals who experienced a fracture event in the first year for those who are 65 or younger to those who are older than 65 (at time of enrollment) using a two-sample test for proportions. What is the p-value from this test?
+
+```{r}
+#figureing out proportion for older
+older <- glow %>% 
+  filter(age > 65)
+
+older %>% 
+  group_by(fracture) %>% 
+  count(fracture)
+85/(196 + 85) # 0.3024911
+
+#figureing out proportion for younger
+younger <- glow %>% 
+  filter(age <= 65)
+
+younger %>% 
+  group_by(fracture) %>% 
+  count(fracture)
+40/(179 + 40) # 0.1826484
+
+#proportion test
+prop.test(x = c(85, 40), n = c(196 + 85, 179 + 40), alternative = "two.sided", correct = FALSE)
+```
+
+We get a p-value of 0.002137. 
+
+## 2. Test the same null hypothesis using a chi-square test. How do your results compare to Question 1?
+
+```{r}
+data_matrix <- matrix(c(85, 40, 196, 179), 
+                      nrow = 2, 
+                      byrow = TRUE)
+colnames(data_matrix) <- c("Fractured", "Not Fractured")
+rownames(data_matrix) <- c("Older", "Younger")
+
+chisq.test(data_matrix)
+```
+
+We get a similar p-value of 0.003013. 
+
+## 3. Fit a logistic regression model with outcome `event` and the predictor variable being an indicator that `age` is less than or equal to 65. Estimate the odds ratio and provide an interpretation.
+
+```{r}
+#create an inidcator age
+#1 means they are greater than 65 and 0 being they are less than or equal to 65
+glow$indage <- ifelse(glow$age > 65, 1, 0)
+model <- glm(event~indage, data = glow, family = binomial)
+summary(model)
+```
+Our $\hat{\beta_{1}} = 0.6630$ and is the difference in log odds between our two groups. So we get an estimated odds ratio of $e^{0.6630} = 1.94$. The interpretation of this is that 1.94  = the odds of the event occurring for our group of people greater than 65 years old divided by the odds of the event occurring for our group of people younger than (or equal to) 65 years of age. And because it is greater than 1 this means that it is more likely that the event occurs for people who are older than 65. 
+
+## 4. Test the same null hypothesis again using your logistic regression. How do your results compare to those from the two-sample and chi-square tests?
+
+We got a p-value of 0.00234 for our null hypothesis that the indicator of age does not effect the log-likelihood of having a fracture event. We got statistically significant results for both of our two-sample test and our chi-squared test. So what we have found in general is that there are differences in the event of a fracture based on a person being older or younger than 65 years of age. 
+
+
+For the remaining questions, the variables we will use are:
+
+- `fracture`: Any fracture in first year (1: No, 2: Yes)
+- `age`: Age at Enrollment (Years)
+- `priorfrac`: History of Prior Fracture (1: No, 2: Yes)
+- `raterisk`: Self-reported risk of fracture (1: Less than others of the same age, 2: Same as others of the same age, 3: Greater than others of the same age)
+
+## 5. Fit a logistic regression model with `event` as the outcome, but now with `age`, `priorfrac`, and `raterisk` as predictors. Treat `raterisk` as a multilevel category. 
+
+```{r}
+model2 <- glm(event~age + priorfrac + raterisk, data = glow, family = binomial)
+summary(model2)
+```
+
+## 6. Estimate the adjusted odds ratio for age and provide an interpretation. 
+
+The estimate for the adjusted odds ratio for age while holding all else constant is $e^{0.04591} = 1.0469$. This means that as an individual increases in age by a single year we expect the odds of them having a fracture to increase by 1.0469 while holding all else constant. 
+
+## 7. Test the null hypothesis of no association between age and occurrence of fracture within 1 year, after adjusting for self-reported risk of fracture and prior fracture. What is the p-value? What do you conclude?
+
+After adjusting for the self-reported risk and the prior fractures we get a p-value of 0.000224. This means that we would reject the null hypothesis of no association between age and occurance of fracture within 1 year. 
+
+## 8. Construct a 95% confidence interval for the coefficient on `age`. How would you interpret this interval?
+
+```{r}
+confint(model2)
+```
+We got a confidence interval of (0.02167066, 0.07053698). This means that we are 95% confident the true population parameter of $\beta_{1}$ would fall between these two values after adjusting for prior factors and risks. 
+
+## 9. Estimate the probability of a fracture in the next year for a 65-year-old with a prior fracture who think their risk is the same as other individuals of their age. 
+
+Our model gives us :
+
+Logit(p) = -4.12484 + 0.04591(age) + 0.70023(prior frac = yes) - 0.86576(rateriskLess) - 0.31720(raterrisksame)
+
+```{r}
+-4.12484 + 0.04591*(1) + 0.70023 -0.31720
+```
+
+We got an estimate logit(p) = -3.6959. So we put this to the $e^{-3.6959.} = 0.0248$ and get the probability of fracture of 0.0248. 
+
+## 10. In your model above, you treated `raterisk` as a multilevel category. When would this make more sense than treating it as a continuous predictor? Is one option more flexible than the other? 
+
+We treated `raterisk` as a factor because we were not using continuous data. We have ordered nominal data, so treating it as continuous doesn't really work. This would make sense if the `raterisk` was numeric. The numeric option is more flexible than the category predictor becasue it allows for smaller differences between number than the large difference between (less, same, more).
+
+
+

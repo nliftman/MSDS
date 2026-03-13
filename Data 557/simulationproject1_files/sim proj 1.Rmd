@@ -134,10 +134,7 @@ ggplot(data = normal_means) + geom_histogram(aes(x = sd)) +
 ```
 e.
 ```{r}
-#NOTE:ran this iteratively for all the sample sizes and then used both the 
-#pop sd and the sample sd 
-
-n <- 500 # you'll also try 10, 30, 100, and 500
+n <- 30 # you'll also try 10, 30, 100, and 500
 # Simulate datasets from different populations with the same mean and standard deviation
 mu <- 10
 sigma <- 10
@@ -156,16 +153,44 @@ normal_means <- normal_means %>%
   cbind(colSds(normal_data))
 #rename the column
 colnames(normal_means)[2] <- "sd" 
+```
 
-#calculating the t statistic with the pop sd
-normal_means <- normal_means %>%
-  mutate(stat_pop = ((means - sd)/(10/sqrt(n))))
-#check if our test statistic is farther that 1.96 away! 
-passes_popsd <- normal_means %>% 
-  #take abs bc it has to be 1.96 away in either direction
-  mutate(teststatistic = abs(stat_pop))
-#count how many are greater than 1.96
-nrow(passes_popsd[passes_popsd$teststatistic>1.648, ])
+```{r}
+#looks fine 
+#calculating the test statistic with the s and n! 
+normal_means_sd <- normal_means %>%
+  mutate(stat_pop = ((means - mu)/(sd/sqrt(n))))
+
+#count how many are greater than 1.96 and smaller than -1.96
+p_value <- normal_means_sd %>% 
+  filter(stat_pop > 1.96 | stat_pop < -1.96)
+#117 observations are stat sig for 5 
+#80 are stat sig for 10
+#50 are stat sig for 30
+#47 are stat sig for 100
+#53 are stat sig for 500
+
+
+#calculating the t-statistic with the population and N
+normal_means_pop <- normal_means %>%
+  mutate(stat_pop = ((means - mu)/(sigma/sqrt(n))))
+p_value <- normal_means_pop %>% 
+  filter(stat_pop > 1.96 | stat_pop < -1.96)
+#get 47 for stat sig for 5
+#get 60 for stat sig for 10 
+#get 48 for 30
+#41 are stat sig for 100
+#57 are stat sig for 500
+
+
+#using a t-statistic with the sd from the groups and a t-dist
+p_value_tdist <- normal_means_sd %>% 
+  filter(stat_pop > 1.699 | stat_pop < -1.833)
+#98 are stat sig for for 5
+#102 are stat sig for 10
+#33 are stat sig for 30
+#31 are stat sig for 100
+#36 are stat sig for 500
 ```
 
 1e. 
@@ -178,10 +203,12 @@ n_30 <- NA
 n_100 <- NA
 n_500 <- NA
 
+
+
 table <- data.frame(names, n_5, n_10, n_30, n_100, n_500)
-table[1, ] <- list("Populatin SD", "56", "40", "42", "43", "52")
-table[nrow(table) + 1, ] <- list("Sample SD", "114", "113", "115", "112", "113")
-table[nrow(table) + 1, ] <- list("t-distribution and Sample SD",  "93", "153", "184", "176", "174")
+table[1, ] <- list("Populatin SD", "47", "60", "48", "41", "57")
+table[nrow(table) + 1, ] <- list("Sample SD", "117", "80", "50", "47", "53")
+table[nrow(table) + 1, ] <- list("t-distribution and Sample SD",  "98", "102", "33", "31", "36")
 
 gt_table <- gt(table)
 gt_table <- gt_table %>% 
@@ -249,11 +276,7 @@ gammadata <- gammadata %>%
 ggplot(data = gammadata) + geom_histogram(aes(x = stat_pop)) +
   labs(title = "Gamma Distribution Test Statistic: Sample Size 500") 
 
-passes_popsd <- gammadata %>% 
-  #take abs bc it has to be 1.96 away in either direction
-  mutate(teststatistic = abs(stat_pop))
-#count how many are greater than 1.96
-nrow(passes_popsd[passes_popsd$teststatistic>1.833, ])
+
 ```
 
 
@@ -300,9 +323,9 @@ n_30 <- NA
 n_500 <- NA
 
 table <- data.frame(names, n_10, n_30, n_500)
-table[1, ] <- list("Normal Distribution", "153", "184", "174")
-table[nrow(table) + 1, ] <- list("Gamma Distribution", "66", "74", "118")
-table[nrow(table) + 1, ] <- list("Uniform Distribution",  "70", "77", "104")
+table[1, ] <- list("Normal Distribution", "63", "52", "48")
+table[nrow(table) + 1, ] <- list("Gamma Distribution", "98", "72", "51")
+table[nrow(table) + 1, ] <- list("Uniform Distribution",  "101", "81", "55")
 
 gt_table <- gt(table)
 gt_table <- gt_table %>% 

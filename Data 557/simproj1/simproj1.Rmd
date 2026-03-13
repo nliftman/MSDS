@@ -1,0 +1,27 @@
+---
+title: "Simulation Project 1 Re-Do"
+output: html_document
+author: "Naomi Liftman"
+---
+```{r}
+# Make results reproducible
+set.seed(5571)
+library(ggplot2)
+library(dplyr)
+library(matrixStats)
+library(gt)
+library(gtExtras)
+
+# Define sample size
+n <- 5 # you'll also try 10, 30, 100, and 500
+
+# Simulate datasets from different populations with the same mean and standard deviation
+mu <- 10
+sigma <- 10
+# Population 1: normal
+data1 <- rnorm(n, mean = mu, sd = sigma)
+# Population 2: skewed distribution
+data2 <- rgamma(n, shape = mu^2/sigma^2, scale = sigma^2/mu)
+# Population 3: propose your own (but make sure the population mean and SD match the other 2 populations)
+```
+

@@ -146,6 +146,40 @@ gt_table
 ```
 
 
+#graphs for final
+```{r}
+#using gt 
+library(gt)
+library(gtExtras)
+
+names <- NA
+estimate <- NA
+p_value <- NA
+
+table <- data.frame(names, estimate, p_value)
+table[1, ] <- list("Intercept", "-789.465", "-")
+table[nrow(table) + 1, ] <- list("Sex", "-21.017", "0.553")
+table[nrow(table) + 1, ] <- list("Year Earned Degree", "17.172", "2.35 e-10")
+table[nrow(table) + 1, ] <- list("Field: Arts", "88.712", "0.058")
+table[nrow(table) + 1, ] <- list("Field: Professional", "101.018", "0.009")
+table[nrow(table) + 1, ] <- list("Degree: PHD", "-13.433", "0.823")
+table[nrow(table) + 1, ] <- list("Degree: Professional", "-40.939", "0.652")
+table[nrow(table) + 1, ] <- list("Administrative Position", "97.900", "0.062")
+
+
+gt_table <- gt(table)
+gt_table <- gt_table %>% 
+  cols_label(
+    names = "",
+    estimate = "Estimate",
+    p_value = "p-Value"
+  ) %>% 
+  tab_header(title = "Model for Jump in Salary when Promoted") %>% 
+  gt_highlight_rows(columns = everything(), rows = c(3,5)) %>% 
+  
+gt_table 
+```
+
 
 
 

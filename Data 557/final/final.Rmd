@@ -64,3 +64,56 @@ salary_inflation <- salary_removed %>%
 
 ```
 
+# Question 1 
+```{r}
+starting <- salary_removed %>% 
+  filter(startyr == year)
+```
+
+# Start year model & sex
+```{r}
+model1 <- lm(salary~sex, data = starting)
+#qq plot for normality
+plot(model1, 2)
+#residual vs fitted values for constant variance
+ggplot(model1, aes(x = .fitted, y = .resid)) +
+  geom_point(position = "jitter")+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") 
+#first need to add the predictor to a new df
+df_residuals <- data.frame(
+  predictor = starting$sex,
+  residuals = residuals(model1)
+)
+#residuals vs predictor for linearity
+ggplot(df_residuals, aes(x = predictor, y = residuals)) +
+  geom_point(position = "jitter")
+```
+
+# Start year model with everything
+
+```{r}
+model2 <- lm(salary ~ sex + field + deg + yrdeg + startyr, data = starting)
+#qq plot for normality
+plot(model2, 2)
+#residual vs fitted values for constant variance
+ggplot(model2, aes(x = .fitted, y = .resid)) +
+  geom_point()+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") 
+#check residuals vs predictor for linearity 
+plot(model2, 1)
+```
+
+# Start year model with sex, field, and start year 
+```{r}
+model3 <- lm(salary~ sex + field + startyr, data = starting)
+#check for normality
+plot(model3, 2)
+#check for constant variance
+ggplot(model3, aes(x = .fitted, y = .resid)) +
+  geom_point()+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") 
+#check linearity
+plot(model3, 1)
+```
+
+# Questions 2

@@ -68,6 +68,8 @@ salary_inflation <- salary_removed %>%
 ```{r}
 starting <- salary_removed %>% 
   filter(startyr == year)
+starting %>% 
+  count()
 ```
 
 # Start year model & sex

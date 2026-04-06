@@ -1,0 +1,21 @@
+---
+title: "survey"
+output: pdf_document
+---
+
+```{r warning = FALSE, error = FALSE, message = FALSE}
+library(tidyverse)
+library(rio)
+library(ggplot2)
+```
+
+```{r}
+survey <- import("surveyapr6.csv")
+senate <- survey %>% 
+  filter(Split == "Faculty Senate")
+council <- survey %>% 
+  filter(Split == "Faculty Council")
+boff <- survey %>% 
+  filter(Split == "Faculty Council,Faculty Senate")
+```
+

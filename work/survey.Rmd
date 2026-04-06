@@ -19,3 +19,42 @@ boff <- survey %>%
   filter(Split == "Faculty Council,Faculty Senate")
 ```
 
+# senate split
+```{r}
+#just getting the questions they will see
+senate_q <- senate %>% 
+  select(18:21, 51:64)
+
+#rename them to work with easier
+senate_num <- senate_q %>% 
+  rename(communicate_agenda = 5,
+         information = 6,
+         respond_approp = 7,
+         admin_support = 8,
+         comphy_concerns = 9,
+         valued_unit = 10,
+         effort_approp = 11,
+         meaningful_contr = 12,
+         wellrun = 13,
+         concerns = 14,
+         likertcomment = 15,
+         process_senate = 16,
+         policy_senate = 17,
+         feedback = 18)
+
+#changing them to numeric (0-5) zero being strongly disagree
+#five being strongly agree and 3 is the middle
+senate_num[senate_num == "Strongly agree"] <- 5
+senate_num[senate_num == "Somewhat agree"] <- 4
+senate_num[senate_num == "Neither agree nor disagree"] <- 3
+senate_num[senate_num == "Somewhat disagree"] <- 2
+senate_num[senate_num == "Strongly Disagree"] <- 1
+```
+
+# graphs
+```{r}
+#graphs
+
+```
+
+

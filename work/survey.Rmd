@@ -49,6 +49,22 @@ senate_num[senate_num == "Somewhat agree"] <- 4
 senate_num[senate_num == "Neither agree nor disagree"] <- 3
 senate_num[senate_num == "Somewhat disagree"] <- 2
 senate_num[senate_num == "Strongly Disagree"] <- 1
+
+#change them to numeric
+senate_num <- transform(senate_num, communicate_agenda = as.numeric(communicate_agenda),
+          information = as.numeric(information),
+          respond_approp = as.numeric(respond_approp),
+          admin_support = as.numeric(admin_support),
+          comphy_concerns = as.numeric(comphy_concerns),
+          valued_unit = as.numeric(valued_unit),
+          effort_approp = as.numeric(effort_approp),
+          meaningful_contr = as.numeric(meaningful_contr),
+          wellrun = as.numeric(wellrun),
+          concerns = as.numeric(concerns))
+
+#create an averages dataframe
+averages <- senate_num %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
 ```
 
 # graphs
@@ -72,5 +88,30 @@ ggplot(data = senate_num, aes(x = Years)) +
   scale_x_discrete(limits = yearsorder) +
   labs(title = "Distribution of Years at the University for Senate Members", x = "Years at the University", y = "Count")
 ```
+
+# Likert analysis
+```{r}
+averages <- data.frame(colMeans(senate_num[, 5:14]))
+```
+
+```{r}
+#communicate agenda based on the appointment 
+ggplot(data = senate_num, aes(x = communicate_agenda, fill = Appointment)) +
+  geom_bar(position = "dodge") 
+
+#information based on the appointment 
+ggplot(data = senate_num, aes(x = information, fill = Appointment)) +
+  geom_bar() 
+
+#comphy concerns bc its low
+ggplot(data = senate_num, aes(x = comphy_concerns, fill = Gender)) +
+  geom_bar()
+```
+
+
+
+
+
+
 
 

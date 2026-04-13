@@ -1,0 +1,22 @@
+1. 
+SELECT: line 4
+FROM: line 1
+JOIN: no line, that is because in SQL to iterate over the data multiple times you have to use a JOIN, 
+but when you use python, you are able to iterate over the data without having to join!
+WHERE: line 2
+GROUP BY & COUNT : count in line 3
+HAVING: line 2
+ORDER BY: line 5
+LIMIT: line 6
+
+2. We have not talked about runtime in our course yet, but I think O(n) is the runtime for iteration, so in this case 
+it would be 0(n*a)?
+
+3. N/A, but I am not very good at coding in python, so I'm sure there are ways to optimize it. 
+
+4. I learned a lot about how to do multiple joins in a single query.
+
+5. I was surprised by which problems were difficult and which problems were not! For instance, the second problem 
+took me nearly 4x the time as the third! There were just little things that make a huge difference when you do them wrong.
+
+6. I am curious about if there is an easier way to write queries where you dont have to have 15 lines of AND statements.

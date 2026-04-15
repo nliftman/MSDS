@@ -10,7 +10,7 @@ library(ggplot2)
 ```
 
 ```{r}
-survey <- import("surveyapr6.csv")
+survey <- import("surveyapr13.csv")
 senate <- survey %>% 
   filter(Split == "Faculty Senate")
 council <- survey %>% 
@@ -91,24 +91,99 @@ ggplot(data = senate_num, aes(x = Years)) +
 
 # Likert analysis
 ```{r}
-averages <- data.frame(colMeans(senate_num[, 5:14]))
+f <- sapply(senate_num, summary)
+f
 ```
 
 ```{r}
 #communicate agenda based on the appointment 
 ggplot(data = senate_num, aes(x = communicate_agenda, fill = Appointment)) +
-  geom_bar(position = "dodge") 
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
 
 #information based on the appointment 
 ggplot(data = senate_num, aes(x = information, fill = Appointment)) +
-  geom_bar() 
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
 
-#comphy concerns bc its low
-ggplot(data = senate_num, aes(x = comphy_concerns, fill = Gender)) +
-  geom_bar()
+ggplot(data = senate_num, aes(x = respond_approp, fill = Appointment)) +
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
+
+ggplot(data = senate_num, aes(x = admin_support, fill = Appointment)) +
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
+
+ggplot(data = senate_num, aes(x = comphy_concerns, fill = Appointment)) +
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
+
+ggplot(data = senate_num, aes(x = valued_unit, fill = Appointment)) +
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
+
+ggplot(data = senate_num, aes(x = effort_approp, fill = Appointment)) +
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
+
+ggplot(data = senate_num, aes(x = meaningful_contr, fill = Appointment)) +
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
+
+ggplot(data = senate_num, aes(x = wellrun, fill = Appointment)) +
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
+
+ggplot(data = senate_num, aes(x = concerns, fill = Appointment)) +
+  geom_bar(position = "dodge") +
+  xlim(0.5, 5.5)
 ```
 
 
+```{r}
+#just getting the questions they will see
+council_q <- council %>% 
+  select(Gender:Years, 65:79)
+
+#rename the columns
+council_q <- council_q %>% 
+  rename(communicate_agenda = 5,
+         information = 6,
+         respond_approp = 7,
+         admin_support = 8,
+         comphy_concerns = 9,
+         valued_unit = 10,
+         effort_approp = 11,
+         meaningful_contr = 12,
+         wellrun = 13,
+         concerns = 14,
+         likertcomment = 15,
+         process_senate = 16,
+         policy_senate = 17,
+         feedback = 18)
+
+#changing them to numeric (0-5) zero being strongly disagree
+#five being strongly agree and 3 is the middle
+council_q[council_q == "Strongly agree"] <- 5
+council_q[council_q == "Somewhat agree"] <- 4
+council_q[council_q == "Neither agree nor disagree"] <- 3
+council_q[council_q == "Somewhat disagree"] <- 2
+council_q[council_q == "Strongly Disagree"] <- 1
+
+#change them to numeric
+council_num <- transform(council_q, communicate_agenda = as.numeric(communicate_agenda),
+          information = as.numeric(information),
+          respond_approp = as.numeric(respond_approp),
+          admin_support = as.numeric(admin_support),
+          comphy_concerns = as.numeric(comphy_concerns),
+          valued_unit = as.numeric(valued_unit),
+          effort_approp = as.numeric(effort_approp),
+          meaningful_contr = as.numeric(meaningful_contr),
+          wellrun = as.numeric(wellrun),
+          concerns = as.numeric(concerns))
+
+averages_council <- data.frame(colMeans(council_num[, 5:14]))
+```
 
 
 

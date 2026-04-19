@@ -1,0 +1,141 @@
+---
+title: "councilcurrent"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(rio)
+library(janitor)
+
+#fcas
+fcas <- read.csv("fcas.csv", skip = 2, header = TRUE)
+fcas <- fcas[1:12,]
+
+#fcbr
+fcbr <- read.csv("fcbr.csv", skip = 2, header = TRUE)
+fcbr <- fcbr[1:9,]
+
+#fccps
+fccps <- read.csv("fccps.csv", skip = 2, header = TRUE)
+fccps <- fccps[1:9,]
+
+#fcfa 
+fcfa <- read.csv("fcfa.csv", skip = 2, header = TRUE)
+fcfa <- fcfa[1:10,]
+
+#fcgej 
+fcgej <- read.csv("fcgej.csv", skip = 2, header = TRUE)
+fcgej <- fcgej[1:11,]
+
+#fcitc
+fcitc <- read.csv("fcitc.csv", skip = 2, header = TRUE)
+fcitc <- fcitc[1:9,]
+
+#fcr
+fcr <- read.csv("fcr.csv", skip = 2, header = TRUE)
+fcr <- fcr[1:10,]
+
+#fcrej
+#doesnt actually matter since we dont have any open slots
+fcrej <- read.csv("fcrej.csv", skip = 2, header = TRUE)
+fcrej <- fcrej[1:12,]
+
+#fcsa
+fcsa <- read.csv("fcsa.csv", skip = 2, header = TRUE)
+fcsa <- fcsa[1:8,]
+
+#fctcp
+fctcp <- read.csv("fctcp.csv", skip = 2, header = TRUE)
+fctcp <- fctcp[1:7,]
+
+#fctl
+fctl <- read.csv("fctl.csv", skip = 2, header = TRUE)
+fctl <- fctl[1:8,]
+
+#fcul
+fcul <- read.csv("fcul.csv", skip = 2, header = TRUE)
+fcul <- fcul[1:7,]
+```
+
+```{r}
+#fcas
+ggplot(data = fcas, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCAS") +
+  theme_bw()
+
+#fcbr
+ggplot(data = fcbr, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCBR") +
+  theme_bw()
+
+#fccps
+ggplot(data = fccps, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCCPS") +
+  theme_bw()
+
+#fcfa
+ggplot(data = fcfa, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCFA") +
+  theme_bw()
+
+#fcgej
+ggplot(data = fcgej, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCGEJ") +
+  theme_bw()
+
+#fcitc
+ggplot(data = fcitc, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCITC") +
+  theme_bw()
+
+#fcr
+ggplot(data = fcr, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCR") +
+  theme_bw()
+
+#fcrej
+ggplot(data = fcrej, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCREJ", caption= "Doesnt actually matter since we dont have any openings") +
+  theme_bw()
+
+#fcsa
+ggplot(data = fcsa, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCSA") +
+  theme_bw()
+
+#fctcp
+ggplot(data = fctcp, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCTCP") +
+  theme_bw()
+
+#fctl
+ggplot(data = fctl, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCTL") +
+  theme_bw()
+
+#fcul
+ggplot(data = fcul, aes(y = Title, fill = College)) +
+  geom_bar() +
+  labs(title = "FCUL") +
+  theme_bw()
+```
+
+
+
+
+
+
+

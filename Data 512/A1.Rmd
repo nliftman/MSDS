@@ -1,0 +1,31 @@
+---
+title: "A1"
+output: html_document
+---
+
+```{r}
+#loading in all libraries needed
+library(ggplot2)
+library(tidyverse)
+library(rio)
+```
+
+```{r}
+#load in the df 
+df <- import('en-wikipedia_traffic_200712-201809.csv')
+
+#i have to make a date column so that we can use it for the graph
+df_clean <- df %>%
+  # Combine columns into a valid Date format
+  mutate(Date = as.Date(paste(year, month, '01'), format = '%Y %m %d'))
+```
+
+```{r}
+ggplot(data = df_clean) + 
+  geom_point(aes(x = Date, y = pagecount_all_views, color = 'red')) 
+```
+
+
+
+
+

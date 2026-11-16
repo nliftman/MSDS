@@ -3,3 +3,38 @@ title: "Final Project"
 output: html_document
 ---
 
+```{r warning = FALSE, message = FALSE, error = FALSE}
+#load in packages
+library(rio)
+library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+#bring in the counts by coc by year
+#we can see that years before 2025 do not have the descriptions of location
+coc2024 <- import("pit_CoC(2024).csv")
+coc2025 <- import("pit_CoC(2025).csv")
+```
+
+```{r}
+#pull the overall homeless and the location type
+coc25_prename <- coc2025 %>% 
+  select(1, 3, 4, 5, 133, 165) 
+
+#rename them so we can work with them 
+coc25 <- coc25_prename %>% 
+  rename("cocnum" = 1,
+         "coc_loc_type" = 2,
+         "count_type" = 3,
+         "overall_homeless_2025" = 4,
+         "sheltered_homeless_2025" = 5,
+         "unsheltered_homless_2025" = 6) 
+```
+
+
+```{r}
+ree <- coc25 %>% 
+  select(1,2,3, 47)
+```
+
